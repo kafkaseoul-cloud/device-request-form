@@ -477,9 +477,9 @@
       <div class="section-title">사은품 정보</div>
     </div>
     <div class="field-group">
-      <label class="field-label req">요금제 매핑 단말</label>
+      <label class="field-label req">사은품 매핑 단말</label>
       <input id="fGiftInfo" class="input" maxlength="50" placeholder="사은품을 매핑할 기준 단말 코드를 입력해주세요.">
-      <p class="error-msg" id="err-giftInfo">요금제 매핑 단말은 필수 입력입니다.</p>
+      <p class="error-msg" id="err-giftInfo">사은품 매핑 단말은 필수 입력입니다.</p>
     </div>
 
     <div class="form-actions">
@@ -931,7 +931,7 @@
       sections.push({ title:'제휴카드 전시 순서', rows:[['등록된 제휴카드', '없음']] });
     }
     sections.push({ title:'사은품 정보', rows:[
-      ['요금제 매핑 단말', fGiftInfo.value.trim()]
+      ['사은품 매핑 단말', fGiftInfo.value.trim()]
     ]});
     return sections;
   }
