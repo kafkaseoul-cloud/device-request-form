@@ -396,6 +396,14 @@
       <p class="error-msg" id="err-unusedPhone">불용폰 판매 여부는 필수 선택입니다.</p>
     </div>
     <div class="field-group">
+      <label class="field-label req">임직원 단말 여부</label>
+      <div class="radio-row" id="staffDeviceRow">
+        <label class="radio-item"><input type="radio" name="staffDevice" value="Y"> Y</label>
+        <label class="radio-item"><input type="radio" name="staffDevice" value="N"> N</label>
+      </div>
+      <p class="error-msg" id="err-staffDevice">임직원 단말 여부는 필수 선택입니다.</p>
+    </div>
+    <div class="field-group">
       <label class="field-label req">분실/파손 보상 여부</label>
       <div class="radio-row" id="lossDamageRow">
         <label class="radio-item"><input type="radio" name="lossDamage" value="Y"> Y</label>
@@ -426,7 +434,7 @@
       </div>
     </div>
     <div class="field-group">
-      <label class="field-label req">요금제 설정</label>
+      <label class="field-label">요금제 설정</label>
       <div class="dtable-wrap">
         <table class="dtable">
           <thead><tr><th>순서</th><th>라벨</th><th>요금제명</th><th>요금제 코드</th></tr></thead>
@@ -455,7 +463,7 @@
       <p class="error-msg" id="err-usedPhoneReturn">중고폰 반납 신청 여부 전시는 필수 선택입니다.</p>
     </div>
     <div class="field-group">
-      <label class="field-label req">제휴카드 전시 순서</label>
+      <label class="field-label">제휴카드 전시 순서</label>
       <div class="dtable-wrap">
         <table class="dtable">
           <thead><tr><th>순서</th><th>카드명</th><th>추가/삭제</th></tr></thead>
@@ -620,6 +628,7 @@
   bindRequiredGroup('joinTypeRow', 'joinType', $('#err-joinType'));
   bindRequiredGroup('deliveryRow', 'delivery', $('#err-delivery'));
   bindRequiredGroup('unusedPhoneRow', 'unusedPhone', $('#err-unusedPhone'));
+  bindRequiredGroup('staffDeviceRow', 'staffDevice', $('#err-staffDevice'));
   bindRequiredGroup('lossDamageRow', 'lossDamage', $('#err-lossDamage'));
   bindRequiredGroup('phoneReplaceRow', 'phoneReplace', $('#err-phoneReplace'));
   bindRequiredGroup('usedPhoneGuaranteeRow', 'usedPhoneGuarantee', $('#err-usedPhoneGuarantee'));
@@ -755,7 +764,7 @@
       '<td><input class="cell-input cs-code" maxlength="10" placeholder="컬러코드"></td>' +
       '<td><input class="cell-input cs-name" maxlength="50" placeholder="노출 컬러명을 입력해주세요."></td>' +
       '<td><div class="swatch-cell"><span class="hash">#</span><input class="cell-input cs-rgb" maxlength="6" placeholder="000000"><span class="color-swatch cs-swatch"></span></div></td>' +
-      '<td><input class="cell-input cs-stock" maxlength="5" inputmode="numeric" placeholder="-9999~9999"></td>' +
+      '<td><input class="cell-input cs-stock" maxlength="5" inputmode="numeric"></td>' +
       '<td class="col-actions"><button type="button" class="btn-dark-sm cs-remove">삭제</button></td>';
     var codeInput = $('.cs-code', tr); blockKorean(codeInput);
     var rgbInput = $('.cs-rgb', tr);
@@ -824,28 +833,16 @@
     }
     var device2 = ['fDisplay','fBattery','fCpu','fWeight','fSize','fWaterproof','fCamera'];
     for(var i=0;i<device2.length;i++){ if(!$('#'+device2[i]).value.trim()) return false; }
-    var colorRowsValid = $all('tr', colorStockBody).every(function(tr){
-      var code = $('.cs-code', tr).value.trim(), name = $('.cs-name', tr).value.trim();
-      var rgb = $('.cs-rgb', tr).value.trim(), stock = $('.cs-stock', tr).value.trim();
-      if(!code || !name || !/^[0-9a-fA-F]{6}$/.test(rgb) || stock==='') return false;
-      var n = Number(stock);
-      return !isNaN(n) && n>=-9999 && n<=9999;
-    });
-    if(!colorRowsValid) return false;
+    // 단말 색상별 재고 / 요금제 설정 / 제휴카드 전시 순서 표는 선택 입력이라 여기서 필수 체크하지 않음.
     if(!radioChecked('joinType')) return false;
     if(!$all('input[name=delivery]:checked').length) return false;
     if(!radioChecked('unusedPhone')) return false;
+    if(!radioChecked('staffDevice')) return false;
     if(!radioChecked('lossDamage')) return false;
     if(!radioChecked('phoneReplace')) return false;
     if(!$('#fPlanMappingDevice').value.trim()) return false;
-    var planRowsValid = $all('tr', planSettingBody).every(function(tr){
-      return $('.ps-label', tr).value.trim() && $('.ps-name', tr).value.trim() && $('.ps-code', tr).value.trim();
-    });
-    if(!planRowsValid) return false;
     if(!radioChecked('usedPhoneGuarantee')) return false;
     if(!radioChecked('usedPhoneReturn')) return false;
-    var partnerRowsValid = $all('tr', partnerCardBody).every(function(tr){ return $('.pc-name', tr).value.trim(); });
-    if(!partnerRowsValid) return false;
     if(!fGiftInfo.value.trim()) return false;
     return true;
   }
@@ -887,36 +884,52 @@
       ['방수', $('#fWaterproof').value.trim()],
       ['카메라', $('#fCamera').value.trim()]
     ]});
-    sections.push({ title:'단말 색상별 재고', table:{
-      headers:['순서','U-Cube 컬러코드','노출 컬러명','RGB','안전재고'],
-      rows: $all('tr', colorStockBody).map(function(tr, i){
-        return [String(i+1), $('.cs-code',tr).value.trim(), $('.cs-name',tr).value.trim(), '#'+$('.cs-rgb',tr).value.trim(), $('.cs-stock',tr).value.trim()];
-      })
-    }});
+    var colorRows = $all('tr', colorStockBody).map(function(tr){
+      return [$('.cs-code',tr).value.trim(), $('.cs-name',tr).value.trim(), $('.cs-rgb',tr).value.trim(), $('.cs-stock',tr).value.trim()];
+    }).filter(function(r){ return r.some(function(c){ return c; }); });
+    if(colorRows.length){
+      sections.push({ title:'단말 색상별 재고', table:{
+        headers:['순서','U-Cube 컬러코드','노출 컬러명','RGB','안전재고'],
+        rows: colorRows.map(function(r, i){ return [String(i+1), r[0], r[1], r[2] ? ('#'+r[2]) : '', r[3]]; })
+      }});
+    } else {
+      sections.push({ title:'단말 색상별 재고', rows:[['등록된 색상', '없음']] });
+    }
     sections.push({ title:'판매 정보', rows:[
       ['기본가입유형', radioChecked('joinType')],
       ['배송방법', $all('input[name=delivery]:checked').map(function(c){ return c.value; }).join(', ')],
       ['불용폰 판매 여부', radioChecked('unusedPhone')],
+      ['임직원 단말 여부', radioChecked('staffDevice')],
       ['분실/파손 보상 여부', radioChecked('lossDamage')],
       ['폰교체 보상 여부', radioChecked('phoneReplace')]
     ]});
     sections.push({ title:'요금제 정보', rows:[
       ['요금제 매핑 단말', $('#fPlanMappingDevice').value.trim()]
     ]});
-    sections.push({ title:'요금제 설정', table:{
-      headers:['순서','라벨','요금제명','요금제 코드'],
-      rows: $all('tr', planSettingBody).map(function(tr, i){
-        return [String(i+1), $('.ps-label',tr).value.trim(), $('.ps-name',tr).value.trim(), $('.ps-code',tr).value.trim()];
-      })
-    }});
+    var planRows = $all('tr', planSettingBody).map(function(tr){
+      return [$('.ps-label',tr).value.trim(), $('.ps-name',tr).value.trim(), $('.ps-code',tr).value.trim()];
+    }).filter(function(r){ return r.some(function(c){ return c; }); });
+    if(planRows.length){
+      sections.push({ title:'요금제 설정', table:{
+        headers:['순서','라벨','요금제명','요금제 코드'],
+        rows: planRows.map(function(r, i){ return [String(i+1), r[0], r[1], r[2]]; })
+      }});
+    } else {
+      sections.push({ title:'요금제 설정', rows:[['등록된 요금제', '없음']] });
+    }
     sections.push({ title:'신청 정보', rows:[
       ['중고폰 가격 보장 프로그램 전시', radioChecked('usedPhoneGuarantee')],
       ['중고폰 반납 신청 여부 전시', radioChecked('usedPhoneReturn')]
     ]});
-    sections.push({ title:'제휴카드 전시 순서', table:{
-      headers:['순서','카드명'],
-      rows: $all('tr', partnerCardBody).map(function(tr, i){ return [String(i+1), $('.pc-name',tr).value.trim()]; })
-    }});
+    var partnerRows = $all('tr', partnerCardBody).map(function(tr){ return $('.pc-name',tr).value.trim(); }).filter(Boolean);
+    if(partnerRows.length){
+      sections.push({ title:'제휴카드 전시 순서', table:{
+        headers:['순서','카드명'],
+        rows: partnerRows.map(function(name, i){ return [String(i+1), name]; })
+      }});
+    } else {
+      sections.push({ title:'제휴카드 전시 순서', rows:[['등록된 제휴카드', '없음']] });
+    }
     sections.push({ title:'사은품 정보', rows:[
       ['요금제 매핑 단말', fGiftInfo.value.trim()]
     ]});
@@ -1014,7 +1027,7 @@
     seedRows(colorStockBody, makeColorRow, DEFAULT_COLOR_ROWS);
     seedRows(partnerCardBody, makePartnerRow, DEFAULT_PARTNER_ROWS);
     $all('tr', planSettingBody).forEach(function(tr){ $('.ps-label',tr).value=''; $('.ps-name',tr).value=''; $('.ps-code',tr).value=''; });
-    $all('input[name=joinType], input[name=delivery], input[name=unusedPhone], input[name=lossDamage], input[name=phoneReplace], input[name=usedPhoneGuarantee], input[name=usedPhoneReturn]').forEach(function(i){ i.checked=false; });
+    $all('input[name=joinType], input[name=delivery], input[name=unusedPhone], input[name=staffDevice], input[name=lossDamage], input[name=phoneReplace], input[name=usedPhoneGuarantee], input[name=usedPhoneReturn]').forEach(function(i){ i.checked=false; });
     $('input[name=delivery][value=택배배송]').checked = true;
     fGiftInfo.value = '';
     $all('.input.error, .cell-input.error', $('#view-form')).forEach(function(i){ i.classList.remove('error'); });
