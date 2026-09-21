@@ -264,36 +264,21 @@
     </div>
 
     <div class="field-group">
-      <div class="row-with-hint">
-        <div>
-          <label class="field-label req">단말 코드</label>
-          <input id="fDeviceCode" class="input" maxlength="50" placeholder="단말코드를 입력해주세요.">
-          <p class="error-msg" id="err-deviceCode">단말 코드는 필수 입력입니다.</p>
-        </div>
-        <span class="hint">한글 불가 / 최대 50자</span>
-      </div>
+      <label class="field-label req">단말 코드</label>
+      <input id="fDeviceCode" class="input" maxlength="50" placeholder="단말코드를 입력해주세요.">
+      <p class="error-msg" id="err-deviceCode">단말 코드는 필수 입력입니다.</p>
     </div>
 
     <div class="field-group">
-      <div class="row-with-hint">
-        <div>
-          <label class="field-label req">단말명(펫네임)</label>
-          <input id="fDeviceNickname" class="input" maxlength="50" placeholder="단말명(펫네임)을 입력해주세요.">
-          <p class="error-msg" id="err-deviceNickname">단말명(펫네임)은 필수 입력입니다.</p>
-        </div>
-        <span class="hint">한글 불가 / 최대 50자</span>
-      </div>
+      <label class="field-label req">단말명(펫네임)</label>
+      <input id="fDeviceNickname" class="input" maxlength="50" placeholder="단말명(펫네임)을 입력해주세요.">
+      <p class="error-msg" id="err-deviceNickname">단말명(펫네임)은 필수 입력입니다.</p>
     </div>
 
     <div class="field-group">
-      <div class="row-with-hint">
-        <div>
-          <label class="field-label req">출고 가격(원)</label>
-          <input id="fReleasePrice" class="input" inputmode="numeric" placeholder="출고 가격을 입력해주세요.">
-          <p class="error-msg" id="err-releasePrice">출고 가격(원)은 필수 입력입니다.</p>
-        </div>
-        <span class="hint">숫자만 입력</span>
-      </div>
+      <label class="field-label req">출고 가격(원)</label>
+      <input id="fReleasePrice" class="input" inputmode="numeric" placeholder="출고 가격을 입력해주세요.">
+      <p class="error-msg" id="err-releasePrice">출고 가격(원)은 필수 입력입니다.</p>
     </div>
 
     <div class="field-group">
@@ -472,13 +457,13 @@
       <div class="section-title">사은품 정보</div>
     </div>
     <div class="field-group">
-      <label class="field-label req">사은품 정보</label>
-      <textarea id="fGiftInfo" class="input" placeholder="사은품 정보를 입력해주세요."></textarea>
-      <p class="error-msg" id="err-giftInfo">사은품 정보는 필수 입력입니다.</p>
+      <label class="field-label req">요금제 매핑 단말</label>
+      <input id="fGiftInfo" class="input" maxlength="50" placeholder="사은품을 매핑할 기준 단말 코드를 입력해주세요.">
+      <p class="error-msg" id="err-giftInfo">요금제 매핑 단말은 필수 입력입니다.</p>
     </div>
 
     <div class="form-actions">
-      <button id="btnDraftSave" class="btn btn-secondary">초안 백업하기</button>
+      <button id="btnResetForm" class="btn btn-secondary">다시 작성하기</button>
       <button id="btnSubmit" class="btn btn-primary" disabled>완료</button>
     </div>
   </section>
@@ -563,8 +548,7 @@
   bindRequired($('#fCamera'), $('#err-camera'));
   bindRequired($('#fPlanMappingDevice'), $('#err-planMappingDevice')); blockKorean($('#fPlanMappingDevice'));
   var fGiftInfo = $('#fGiftInfo');
-  bindRequired(fGiftInfo, $('#err-giftInfo'));
-  fGiftInfo.addEventListener('input', function(){ fGiftInfo.style.height='auto'; fGiftInfo.style.height=(fGiftInfo.scrollHeight)+'px'; });
+  bindRequired(fGiftInfo, $('#err-giftInfo')); blockKorean(fGiftInfo);
 
   function bindRequiredSelect(select, errEl){
     function check(){ var bad = !select.value; select.classList.toggle('error', bad); if(errEl) errEl.classList.toggle('show', bad); return !bad; }
@@ -752,8 +736,10 @@
     });
     return tr;
   }
+  var DEFAULT_COLOR_ROWS = 4;
+  function seedRows(tbody, makeFn, count){ tbody.innerHTML = ''; for(var i=0;i<count;i++){ tbody.appendChild(makeFn()); } renumberRows(tbody); }
   $('#btnAddColorRow').addEventListener('click', function(){ colorStockBody.appendChild(makeColorRow()); renumberRows(colorStockBody); });
-  colorStockBody.appendChild(makeColorRow()); renumberRows(colorStockBody);
+  seedRows(colorStockBody, makeColorRow, DEFAULT_COLOR_ROWS);
 
   var partnerCardBody = $('#partnerCardBody');
   function makePartnerRow(){
@@ -768,8 +754,9 @@
     });
     return tr;
   }
+  var DEFAULT_PARTNER_ROWS = 5;
   $('#btnAddPartnerRow').addEventListener('click', function(){ partnerCardBody.appendChild(makePartnerRow()); renumberRows(partnerCardBody); });
-  partnerCardBody.appendChild(makePartnerRow()); renumberRows(partnerCardBody);
+  seedRows(partnerCardBody, makePartnerRow, DEFAULT_PARTNER_ROWS);
 
   // 요금제 설정: fixed 3 rows, no add/delete
   var planSettingBody = $('#planSettingBody');
@@ -831,102 +818,6 @@
   $('#view-form').addEventListener('input', recomputeSubmitEnabled);
   $('#view-form').addEventListener('change', recomputeSubmitEnabled);
 
-  // ---------- draft backup (localStorage) ----------
-  var DRAFT_KEY = 'deviceRequestFormDraft';
-  function serializeForm(){
-    return {
-      productType: radioChecked('productType'),
-      categoryMap: $('#fCategoryMap').value,
-      deviceAttr: fDeviceAttr.value,
-      deviceType: fDeviceType.value,
-      deviceCode: $('#fDeviceCode').value,
-      deviceNickname: $('#fDeviceNickname').value,
-      releasePrice: $('#fReleasePrice').value,
-      capacity: $all('input[name=capacity]:checked').map(function(c){ return c.value; }),
-      releaseDate: releasePair[0].value, releaseTime: releasePair[1].value,
-      preorderStartDate: preorderStartPair[0].value, preorderStartTime: preorderStartPair[1].value,
-      preorderEndDate: preorderEndPair[0].value, preorderEndTime: preorderEndPair[1].value,
-      preactStartDate: preactStartPair[0].value, preactStartTime: preactStartPair[1].value,
-      preactEndDate: preactEndPair[0].value, preactEndTime: preactEndPair[1].value,
-      display: $('#fDisplay').value, battery: $('#fBattery').value, cpu: $('#fCpu').value,
-      weight: $('#fWeight').value, size: $('#fSize').value, waterproof: $('#fWaterproof').value, camera: $('#fCamera').value,
-      colorStock: $all('tr', colorStockBody).map(function(tr){
-        return { code:$('.cs-code',tr).value, name:$('.cs-name',tr).value, rgb:$('.cs-rgb',tr).value, stock:$('.cs-stock',tr).value };
-      }),
-      joinType: radioChecked('joinType'),
-      delivery: $all('input[name=delivery]:checked').map(function(c){ return c.value; }),
-      unusedPhone: radioChecked('unusedPhone'), lossDamage: radioChecked('lossDamage'), phoneReplace: radioChecked('phoneReplace'),
-      planMappingDevice: $('#fPlanMappingDevice').value,
-      planSetting: $all('tr', planSettingBody).map(function(tr){
-        return { label:$('.ps-label',tr).value, name:$('.ps-name',tr).value, code:$('.ps-code',tr).value };
-      }),
-      usedPhoneGuarantee: radioChecked('usedPhoneGuarantee'), usedPhoneReturn: radioChecked('usedPhoneReturn'),
-      partnerCards: $all('tr', partnerCardBody).map(function(tr){ return { name:$('.pc-name',tr).value }; }),
-      giftInfo: fGiftInfo.value
-    };
-  }
-  function setRadio(name, value){ if(!value) return; var r = $('input[name="'+name+'"][value="'+value+'"]'); if(r) r.checked = true; }
-  function restoreForm(d){
-    if(!d) return;
-    setRadio('productType', d.productType);
-    $('#fCategoryMap').value = d.categoryMap || '';
-    fDeviceAttr.value = d.deviceAttr || '';
-    updateDeviceTypeOptions();
-    if(d.deviceType) fDeviceType.value = d.deviceType;
-    $('#fDeviceCode').value = d.deviceCode || '';
-    $('#fDeviceNickname').value = d.deviceNickname || '';
-    $('#fReleasePrice').value = d.releasePrice || '';
-    (d.capacity||[]).forEach(function(v){ var cb = $('input[name=capacity][value="'+v+'"]'); if(cb) cb.checked = true; });
-    releasePair[0].value = d.releaseDate||''; releasePair[1].value = d.releaseTime||'';
-    preorderStartPair[0].value = d.preorderStartDate||''; preorderStartPair[1].value = d.preorderStartTime||'';
-    preorderEndPair[0].value = d.preorderEndDate||''; preorderEndPair[1].value = d.preorderEndTime||'';
-    preactStartPair[0].value = d.preactStartDate||''; preactStartPair[1].value = d.preactStartTime||'';
-    preactEndPair[0].value = d.preactEndDate||''; preactEndPair[1].value = d.preactEndTime||'';
-    updateProductTypeUI();
-    $('#fDisplay').value = d.display||''; $('#fBattery').value = d.battery||''; $('#fCpu').value = d.cpu||'';
-    $('#fWeight').value = d.weight||''; $('#fSize').value = d.size||''; $('#fWaterproof').value = d.waterproof||''; $('#fCamera').value = d.camera||'';
-    if(d.colorStock && d.colorStock.length){
-      colorStockBody.innerHTML = '';
-      d.colorStock.forEach(function(row){
-        var tr = makeColorRow();
-        $('.cs-code',tr).value = row.code||''; $('.cs-name',tr).value = row.name||'';
-        $('.cs-rgb',tr).value = row.rgb||''; $('.cs-stock',tr).value = row.stock||'';
-        var sw = $('.cs-swatch', tr); if(/^[0-9a-fA-F]{6}$/.test(row.rgb||'')) sw.style.background = '#'+row.rgb;
-        colorStockBody.appendChild(tr);
-      });
-      renumberRows(colorStockBody);
-    }
-    setRadio('joinType', d.joinType);
-    (d.delivery||[]).forEach(function(v){ var cb = $('input[name=delivery][value="'+v+'"]'); if(cb) cb.checked = true; });
-    if(d.delivery && d.delivery.length){ $all('input[name=delivery]').forEach(function(cb){ if(d.delivery.indexOf(cb.value)===-1) cb.checked = false; }); }
-    setRadio('unusedPhone', d.unusedPhone); setRadio('lossDamage', d.lossDamage); setRadio('phoneReplace', d.phoneReplace);
-    $('#fPlanMappingDevice').value = d.planMappingDevice || '';
-    (d.planSetting||[]).forEach(function(row, i){
-      var tr = $all('tr', planSettingBody)[i]; if(!tr) return;
-      $('.ps-label',tr).value = row.label||''; $('.ps-name',tr).value = row.name||''; $('.ps-code',tr).value = row.code||'';
-    });
-    setRadio('usedPhoneGuarantee', d.usedPhoneGuarantee); setRadio('usedPhoneReturn', d.usedPhoneReturn);
-    if(d.partnerCards && d.partnerCards.length){
-      partnerCardBody.innerHTML = '';
-      d.partnerCards.forEach(function(row){
-        var tr = makePartnerRow(); $('.pc-name',tr).value = row.name||''; partnerCardBody.appendChild(tr);
-      });
-      renumberRows(partnerCardBody);
-    }
-    fGiftInfo.value = d.giftInfo || '';
-    fGiftInfo.dispatchEvent(new Event('input'));
-    recomputeSubmitEnabled();
-  }
-  $('#btnDraftSave').addEventListener('click', function(){
-    localStorage.setItem(DRAFT_KEY, JSON.stringify(serializeForm()));
-    showToast('임시저장 되었습니다.');
-  });
-  (function loadDraftOnStart(){
-    try{
-      var raw = localStorage.getItem(DRAFT_KEY);
-      if(raw){ restoreForm(JSON.parse(raw)); showToast('임시저장된 초안을 불러왔습니다.'); }
-    }catch(e){ /* ignore malformed draft */ }
-  })();
 
   // ---------- build result sections ----------
   function selectedCapacities(){ return $all('input[name=capacity]:checked').map(function(c){ return c.value; }); }
@@ -992,7 +883,9 @@
       headers:['순서','카드명'],
       rows: $all('tr', partnerCardBody).map(function(tr, i){ return [String(i+1), $('.pc-name',tr).value.trim()]; })
     }});
-    sections.push({ title:'사은품 정보', full: fGiftInfo.value.trim() });
+    sections.push({ title:'사은품 정보', rows:[
+      ['요금제 매핑 단말', fGiftInfo.value.trim()]
+    ]});
     return sections;
   }
 
@@ -1084,17 +977,20 @@
     $('input[name=productType][value=general]').checked = true;
     updateProductTypeUI();
     ['fDisplay','fBattery','fCpu','fWeight','fSize','fWaterproof','fCamera','fPlanMappingDevice'].forEach(function(id){ $('#'+id).value=''; });
-    colorStockBody.innerHTML = ''; colorStockBody.appendChild(makeColorRow()); renumberRows(colorStockBody);
-    partnerCardBody.innerHTML = ''; partnerCardBody.appendChild(makePartnerRow()); renumberRows(partnerCardBody);
+    seedRows(colorStockBody, makeColorRow, DEFAULT_COLOR_ROWS);
+    seedRows(partnerCardBody, makePartnerRow, DEFAULT_PARTNER_ROWS);
     $all('tr', planSettingBody).forEach(function(tr){ $('.ps-label',tr).value=''; $('.ps-name',tr).value=''; $('.ps-code',tr).value=''; });
     $all('input[name=joinType], input[name=delivery], input[name=unusedPhone], input[name=lossDamage], input[name=phoneReplace], input[name=usedPhoneGuarantee], input[name=usedPhoneReturn]').forEach(function(i){ i.checked=false; });
     $('input[name=delivery][value=택배배송]').checked = true;
-    fGiftInfo.value = ''; fGiftInfo.style.height = '';
+    fGiftInfo.value = '';
     $all('.input.error, .cell-input.error', $('#view-form')).forEach(function(i){ i.classList.remove('error'); });
     $all('.error-msg.show', $('#view-form')).forEach(function(m){ m.classList.remove('show'); });
-    localStorage.removeItem(DRAFT_KEY);
     recomputeSubmitEnabled();
   }
+  $('#btnResetForm').addEventListener('click', function(){
+    resetForm();
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
   $('#btnRestart').addEventListener('click', function(){
     resetForm();
     $('#view-result').classList.add('hidden');
