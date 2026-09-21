@@ -283,8 +283,10 @@
 
     <div class="field-group">
       <label class="field-label req">단말 용량(상세 노출)</label>
-      <div class="checkbox-row" id="capacityRow"></div>
-      <p class="error-msg" id="err-capacity">단말 용량은 1개 이상 선택해주세요.</p>
+      <div class="select-wrap">
+        <select id="fCapacity" class="input"></select>
+      </div>
+      <p class="error-msg" id="err-capacity">단말 용량은 필수 선택입니다.</p>
     </div>
 
     <div class="field-group">
@@ -579,16 +581,12 @@
   }
   fDeviceAttr.addEventListener('change', updateDeviceTypeOptions);
 
-  // ---------- 단말 용량 (multi checkbox) ----------
+  // ---------- 단말 용량 (단일 선택 — 단말 1대당 용량은 하나뿐) ----------
   var capacityOptions = ['2TB','1TB','512GB','256GB','128GB','64GB','32GB','16GB','기타'];
-  $('#capacityRow').innerHTML = capacityOptions.map(function(c){
-    return '<label class="checkbox-item"><input type="checkbox" name="capacity" value="'+c+'"> '+c+'</label>';
-  }).join('');
-  $all('input[name=capacity]').forEach(function(cb){
-    cb.addEventListener('change', function(){
-      if($all('input[name=capacity]:checked').length){ $('#err-capacity').classList.remove('show'); }
-    });
-  });
+  var fCapacity = $('#fCapacity');
+  fCapacity.innerHTML = '<option value="" disabled selected>선택해주세요.</option>' +
+    capacityOptions.map(function(c){ return '<option value="'+c+'">'+c+'</option>'; }).join('');
+  bindRequiredSelect(fCapacity, $('#err-capacity'));
 
   // ---------- date/time helpers (same masking logic as the event-request-form tool) ----------
   function maskDateValue(raw){
@@ -781,7 +779,7 @@
     if(!$('#fDeviceCode').value.trim()) return false;
     if(!$('#fDeviceNickname').value.trim()) return false;
     if(!$('#fReleasePrice').value.trim()) return false;
-    if(!$all('input[name=capacity]:checked').length) return false;
+    if(!fCapacity.value) return false;
     if(!pairFilled(releasePair) || !pairFormatOk(releasePair)) return false;
     if(isPreorderType()){
       if(!pairFilled(preorderStartPair) || !pairFilled(preorderEndPair) || !pairFormatOk(preorderStartPair) || !pairFormatOk(preorderEndPair)) return false;
@@ -820,7 +818,6 @@
 
 
   // ---------- build result sections ----------
-  function selectedCapacities(){ return $all('input[name=capacity]:checked').map(function(c){ return c.value; }); }
   function dtText(pair){ return pair[0].value && pair[1].value ? (pair[0].value+' '+pair[1].value) : ''; }
   function rangeText(startPair, endPair){
     var s = dtText(startPair), e = dtText(endPair);
@@ -839,7 +836,7 @@
       ['단말 코드', $('#fDeviceCode').value.trim()],
       ['단말명(펫네임)', $('#fDeviceNickname').value.trim()],
       ['출고 가격(원)', $('#fReleasePrice').value.trim()],
-      ['단말 용량(상세 노출)', selectedCapacities().join(', ')],
+      ['단말 용량(상세 노출)', fCapacity.value],
       ['출시일자', dtText(releasePair)],
       ['사전예약 기간', preorder ? rangeText(preorderStartPair, preorderEndPair) : '해당없음(일반)'],
       ['사전개통 기간', preorder ? rangeText(preactStartPair, preactEndPair) : '해당없음(일반)']
@@ -972,7 +969,7 @@
     $all('input[type=text], input:not([type])', $('#view-form')).forEach(function(i){ i.value=''; });
     $('#fCategoryMap').value = ''; fDeviceAttr.value = ''; updateDeviceTypeOptions();
     $('#fDeviceCode').value=''; $('#fDeviceNickname').value=''; $('#fReleasePrice').value='';
-    $all('input[name=capacity]').forEach(function(cb){ cb.checked=false; });
+    fCapacity.value = '';
     [releasePair, preorderStartPair, preorderEndPair, preactStartPair, preactEndPair].forEach(function(p){ p[0].value=''; p[1].value=''; p[0].classList.remove('error'); p[1].classList.remove('error'); });
     $('input[name=productType][value=general]').checked = true;
     updateProductTypeUI();
