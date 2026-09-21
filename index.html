@@ -236,24 +236,26 @@
       <label class="field-label req">카테고리 맵핑</label>
       <div class="select-wrap">
         <select id="fCategoryMap" class="input">
-          <option value="" disabled selected>선택해주세요.</option>
+          <option value="" disabled selected>선택</option>
           <option value="휴대폰">휴대폰</option>
           <option value="태블릿">태블릿</option>
           <option value="스마트워치">스마트워치</option>
         </select>
       </div>
+      <p class="error-msg" id="err-categoryMap">카테고리 맵핑은 필수 선택입니다.</p>
     </div>
 
     <div class="field-group">
       <label class="field-label req">단말 속성</label>
       <div class="select-wrap">
         <select id="fDeviceAttr" class="input">
-          <option value="" disabled selected>선택해주세요.</option>
+          <option value="" disabled selected>선택</option>
           <option value="휴대폰">휴대폰</option>
           <option value="2nd 디바이스">2nd 디바이스</option>
           <option value="액세서리">액세서리</option>
         </select>
       </div>
+      <p class="error-msg" id="err-deviceAttr">단말 속성은 필수 선택입니다.</p>
     </div>
 
     <div class="field-group hidden" id="deviceTypeWrap">
@@ -261,6 +263,7 @@
       <div class="select-wrap">
         <select id="fDeviceType" class="input"></select>
       </div>
+      <p class="error-msg" id="err-deviceType">단말 유형은 필수 선택입니다.</p>
     </div>
 
     <div class="field-group">
@@ -367,41 +370,46 @@
     </div>
     <div class="field-group">
       <label class="field-label req">기본가입유형</label>
-      <div class="radio-row">
+      <div class="radio-row" id="joinTypeRow">
         <label class="radio-item"><input type="radio" name="joinType" value="기기변경"> 기기변경</label>
         <label class="radio-item"><input type="radio" name="joinType" value="번호이동"> 번호이동</label>
         <label class="radio-item"><input type="radio" name="joinType" value="신규가입"> 신규가입</label>
       </div>
+      <p class="error-msg" id="err-joinType">기본가입유형은 필수 선택입니다.</p>
     </div>
     <div class="field-group">
       <label class="field-label req">배송방법</label>
-      <div class="checkbox-row">
+      <div class="checkbox-row" id="deliveryRow">
         <label class="checkbox-item"><input type="checkbox" name="delivery" value="택배배송" checked> 택배배송</label>
         <label class="checkbox-item"><input type="checkbox" name="delivery" value="당일택배"> 당일택배</label>
         <label class="checkbox-item"><input type="checkbox" name="delivery" value="오늘배송"> 오늘배송</label>
         <label class="checkbox-item"><input type="checkbox" name="delivery" value="새벽배송"> 새벽배송</label>
       </div>
+      <p class="error-msg" id="err-delivery">배송방법은 1개 이상 선택해야 합니다.</p>
     </div>
     <div class="field-group">
       <label class="field-label req">불용폰 판매 여부</label>
-      <div class="radio-row">
+      <div class="radio-row" id="unusedPhoneRow">
         <label class="radio-item"><input type="radio" name="unusedPhone" value="Y"> Y</label>
         <label class="radio-item"><input type="radio" name="unusedPhone" value="N"> N</label>
       </div>
+      <p class="error-msg" id="err-unusedPhone">불용폰 판매 여부는 필수 선택입니다.</p>
     </div>
     <div class="field-group">
       <label class="field-label req">분실/파손 보상 여부</label>
-      <div class="radio-row">
+      <div class="radio-row" id="lossDamageRow">
         <label class="radio-item"><input type="radio" name="lossDamage" value="Y"> Y</label>
         <label class="radio-item"><input type="radio" name="lossDamage" value="N"> N</label>
       </div>
+      <p class="error-msg" id="err-lossDamage">분실/파손 보상 여부는 필수 선택입니다.</p>
     </div>
     <div class="field-group">
       <label class="field-label req">폰교체 보상 여부</label>
-      <div class="radio-row">
+      <div class="radio-row" id="phoneReplaceRow">
         <label class="radio-item"><input type="radio" name="phoneReplace" value="Y"> Y</label>
         <label class="radio-item"><input type="radio" name="phoneReplace" value="N"> N</label>
       </div>
+      <p class="error-msg" id="err-phoneReplace">폰교체 보상 여부는 필수 선택입니다.</p>
     </div>
 
     <div class="field-group no-border">
@@ -432,17 +440,19 @@
     </div>
     <div class="field-group">
       <label class="field-label req">중고폰 가격 보장 프로그램 전시</label>
-      <div class="radio-row">
+      <div class="radio-row" id="usedPhoneGuaranteeRow">
         <label class="radio-item"><input type="radio" name="usedPhoneGuarantee" value="Y"> Y</label>
         <label class="radio-item"><input type="radio" name="usedPhoneGuarantee" value="N"> N</label>
       </div>
+      <p class="error-msg" id="err-usedPhoneGuarantee">중고폰 가격 보장 프로그램 전시는 필수 선택입니다.</p>
     </div>
     <div class="field-group">
       <label class="field-label req">중고폰 반납 신청 여부 전시</label>
-      <div class="radio-row">
+      <div class="radio-row" id="usedPhoneReturnRow">
         <label class="radio-item"><input type="radio" name="usedPhoneReturn" value="Y"> Y</label>
         <label class="radio-item"><input type="radio" name="usedPhoneReturn" value="N"> N</label>
       </div>
+      <p class="error-msg" id="err-usedPhoneReturn">중고폰 반납 신청 여부 전시는 필수 선택입니다.</p>
     </div>
     <div class="field-group">
       <label class="field-label req">제휴카드 전시 순서</label>
@@ -558,11 +568,12 @@
     select.addEventListener('change', function(){ if(select.value){ select.classList.remove('error'); if(errEl) errEl.classList.remove('show'); } });
     return check;
   }
-  bindRequiredSelect($('#fCategoryMap'));
-  bindRequiredSelect($('#fDeviceAttr'));
+  bindRequiredSelect($('#fCategoryMap'), $('#err-categoryMap'));
+  bindRequiredSelect($('#fDeviceAttr'), $('#err-deviceAttr'));
 
   // ---------- 단말 속성 -> 단말 유형 conditional options ----------
   var fDeviceAttr = $('#fDeviceAttr'), fDeviceType = $('#fDeviceType'), deviceTypeWrap = $('#deviceTypeWrap');
+  bindRequiredSelect(fDeviceType, $('#err-deviceType'));
   var deviceTypeOptions = {
     '휴대폰': ['5G폰','LTE폰','일반폰'],
     '2nd 디바이스': ['태블릿','워치','노트북'],
@@ -573,9 +584,11 @@
     if(!opts.length){
       deviceTypeWrap.classList.add('hidden');
       fDeviceType.innerHTML = '';
+      fDeviceType.classList.remove('error');
+      $('#err-deviceType').classList.remove('show');
     } else {
       deviceTypeWrap.classList.remove('hidden');
-      fDeviceType.innerHTML = '<option value="" disabled selected>선택해주세요.</option>' +
+      fDeviceType.innerHTML = '<option value="" disabled selected>선택</option>' +
         opts.map(function(o){ return '<option value="'+esc(o)+'">'+esc(o)+'</option>'; }).join('');
     }
   }
@@ -584,9 +597,33 @@
   // ---------- 단말 용량 (단일 선택 — 단말 1대당 용량은 하나뿐) ----------
   var capacityOptions = ['2TB','1TB','512GB','256GB','128GB','64GB','32GB','16GB','기타'];
   var fCapacity = $('#fCapacity');
-  fCapacity.innerHTML = '<option value="" disabled selected>선택해주세요.</option>' +
+  fCapacity.innerHTML = '<option value="" disabled selected>선택</option>' +
     capacityOptions.map(function(c){ return '<option value="'+c+'">'+c+'</option>'; }).join('');
   bindRequiredSelect(fCapacity, $('#err-capacity'));
+
+  // ---------- radio/checkbox group validation: show the error once focus leaves the group
+  // with nothing selected (checked-count===0), same "필드 이탈 시" behavior as text inputs ----------
+  function bindRequiredGroup(rowId, name, errEl, minChecked){
+    minChecked = minChecked || 1;
+    var row = document.getElementById(rowId);
+    row.addEventListener('focusout', function(e){
+      if(row.contains(e.relatedTarget)) return;
+      var checkedCount = $all('input[name="'+name+'"]:checked').length;
+      errEl.classList.toggle('show', checkedCount < minChecked);
+    });
+    $all('input[name="'+name+'"]', row).forEach(function(inp){
+      inp.addEventListener('change', function(){
+        if($all('input[name="'+name+'"]:checked').length >= minChecked) errEl.classList.remove('show');
+      });
+    });
+  }
+  bindRequiredGroup('joinTypeRow', 'joinType', $('#err-joinType'));
+  bindRequiredGroup('deliveryRow', 'delivery', $('#err-delivery'));
+  bindRequiredGroup('unusedPhoneRow', 'unusedPhone', $('#err-unusedPhone'));
+  bindRequiredGroup('lossDamageRow', 'lossDamage', $('#err-lossDamage'));
+  bindRequiredGroup('phoneReplaceRow', 'phoneReplace', $('#err-phoneReplace'));
+  bindRequiredGroup('usedPhoneGuaranteeRow', 'usedPhoneGuarantee', $('#err-usedPhoneGuarantee'));
+  bindRequiredGroup('usedPhoneReturnRow', 'usedPhoneReturn', $('#err-usedPhoneReturn'));
 
   // ---------- date/time helpers (same masking logic as the event-request-form tool) ----------
   function maskDateValue(raw){
