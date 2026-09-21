@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>단말 판매 요청서</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  /* Same cobalt theme tokens as the event-request-form sibling tool, kept identical on purpose
+     so the two request-form tools read as one family. */
+  :root{
+    --primary: oklch(58% 0.20 256);
+    --primary-focus: oklch(64% 0.19 256);
+    --primary-soft: oklch(58% 0.20 256 / 12%);
+    --on-primary: oklch(99% 0 0);
+    --text: oklch(24% 0.020 258);
+    --muted: oklch(46% 0.016 257);
+    --muted-80: oklch(30% 0.018 258);
+    --text-disabled: oklch(68% 0.010 255);
+    --divider: oklch(93.5% 0.005 250);
+    --hairline: oklch(88% 0.008 250);
+    --hairline-strong: oklch(70% 0.02 256);
+    --error: oklch(58% 0.22 25);
+    --error-soft: oklch(58% 0.22 25 / 15%);
+    --scrim: oklch(24% 0.02 258 / 86%);
+    --header-bg: oklch(97.3% 0.005 250);
+    --surface-pearl: oklch(97.3% 0.005 250);
+    --disabled: oklch(92% 0.006 250);
+    --surface: oklch(99.1% 0.003 250);
+    --bg: oklch(97% 0.006 250);
+    --radius: 14px;
+    --radius-md: 8px;
+    --radius-sm: 6px;
+    --radius-pill: 8px;
+    --font-display: 'Space Grotesk', 'Pretendard', -apple-system, BlinkMacSystemFont, "Noto Sans KR", "Malgun Gothic", sans-serif;
+    --font-body: 'Pretendard', 'Inter', -apple-system, BlinkMacSystemFont, "Noto Sans KR", "Malgun Gothic", sans-serif;
+    --font-mono: 'JetBrains Mono', 'Pretendard', ui-monospace, "SFMono-Regular", monospace;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{ font-family: var(--font-body); color: var(--text); background: var(--bg); line-height:1.47; -webkit-font-smoothing: antialiased; }
+  .page{ max-width: 900px; margin: 0 auto; padding: 40px 20px 100px; }
+  .page-header{ margin-bottom: 28px; }
+  .page-header .eyebrow{
+    display:flex; align-items:center; gap:8px; margin:0 0 10px;
+    font-family: var(--font-mono); font-size:12px; font-weight:600; color:var(--primary);
+    text-transform:uppercase; letter-spacing:0.08em;
+  }
+  .page-header .eyebrow::before{ content:""; width:10px; height:2px; background:var(--primary); display:inline-block; }
+  .page-header .version-tag{
+    font-family: var(--font-mono); font-size:11px; font-weight:500; color:var(--muted);
+    border:1px solid var(--hairline); border-radius:4px; padding:1px 7px; letter-spacing:0.02em; text-transform:none;
+  }
+  .page-header h1{ font-family: var(--font-display); font-size: 32px; font-weight:600; letter-spacing:-0.02em; margin: 0 0 8px; }
+  .page-header p{ margin:0; color: var(--muted); font-size: 14px; }
+
+  .card{ background: var(--surface); border:1px solid var(--hairline); box-shadow:none; border-radius: var(--radius); padding:32px; margin-bottom:24px; }
+  .hidden{ display:none !important; }
+
+  .field-group{ margin-bottom: 28px; }
+  .field-label{ display:block; font-size:14px; font-weight:600; letter-spacing:-0.224px; color:var(--text); margin-bottom:10px; }
+  .req::before{ content:"* "; color: var(--error); }
+  .hint{ font-family: var(--font-mono); font-size:11px; letter-spacing:0.01em; color: var(--muted); white-space:nowrap; }
+
+  .radio-row, .checkbox-row{ display:flex; gap:24px; flex-wrap:wrap; }
+  .radio-item, .checkbox-item{ display:flex; align-items:center; gap:10px; font-size:14px; color:var(--text); cursor:pointer; }
+
+  .radio-item input[type=radio], .checkbox-item input[type=checkbox]{
+    -webkit-appearance:none; appearance:none; margin:0; flex-shrink:0;
+    width:20px; height:20px; border:2px solid var(--hairline-strong); background:var(--surface);
+    cursor:pointer; position:relative; transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease;
+  }
+  .radio-item input[type=radio]{ border-radius:50%; }
+  .checkbox-item input[type=checkbox]{ border-radius:5px; }
+  .radio-item input[type=radio]:hover, .checkbox-item input[type=checkbox]:hover{ border-color: var(--primary); }
+  .radio-item input[type=radio]:focus-visible, .checkbox-item input[type=checkbox]:focus-visible{ outline:none; box-shadow: 0 0 0 4px var(--primary-soft); }
+  .radio-item input[type=radio]:checked{ border-color: var(--primary); }
+  .radio-item input[type=radio]:checked::after{ content:""; position:absolute; inset:4px; border-radius:50%; background: var(--primary); }
+  .checkbox-item input[type=checkbox]:checked{ border-color: var(--primary); background: var(--primary); }
+  .checkbox-item input[type=checkbox]:checked::after{
+    content:""; position:absolute; left:5px; top:1px; width:5px; height:10px;
+    border:solid var(--on-primary); border-width:0 2px 2px 0; transform:rotate(45deg);
+  }
+  .checkbox-item input[type=checkbox]:disabled, .radio-item input[type=radio]:disabled{ opacity:.4; cursor:not-allowed; }
+
+  .input, textarea.input, select.input{
+    width:100%; padding:12px 14px; font-size:14px; border:1px solid var(--hairline);
+    border-radius: var(--radius-sm); font-family:inherit; color:var(--text); background:var(--surface);
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  .input::placeholder{ color: var(--muted); }
+  .input:hover{ border-color: var(--hairline-strong); }
+  textarea.input{ min-height: 90px; resize: vertical; }
+  .input.error{ border-color: var(--error); }
+  .input:focus, .input.error:focus{ outline:none; border-color:var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+  .input:disabled{ background: var(--header-bg); color: var(--text-disabled); border-color: var(--divider); cursor: not-allowed; }
+  .input:disabled::placeholder{ color: var(--text-disabled); }
+  .error-msg{ display:none; color: var(--error); font-size:13px; margin-top:6px; }
+  .error-msg.show{ display:block; }
+
+  .row-with-hint{ display:flex; gap:12px; align-items:flex-start; }
+  .row-with-hint > div{ flex:1; min-width:0; }
+  .row-with-hint > .hint{ padding-top:14px; margin-top:0; width:78px; text-align:left; }
+
+  .period-row{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+  .period-dash{ font-size:22px; color:var(--text); }
+  .picker-field{ position:relative; }
+  .picker-field .input{ width:170px; padding-right:42px; }
+  .picker-field.time-field .input{ width:150px; }
+  .picker-field .icon-btn{
+    position:absolute; right:6px; top:50%; transform:translateY(-50%);
+    width:30px; height:30px; border:none; background:transparent; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; padding:0; color:var(--muted);
+  }
+  .picker-field .icon-btn:hover{ color: var(--primary); }
+  .picker-field .native-picker{ position:absolute; right:6px; top:50%; transform:translateY(-50%); width:30px; height:30px; opacity:0; pointer-events:none; border:none; padding:0; }
+
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:11px 24px; border-radius: var(--radius-pill); border:none; font-size:15px; font-weight:400;
+    letter-spacing:-0.24px; cursor:pointer; font-family:inherit;
+    transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .1s ease;
+  }
+  .btn:active{ transform: scale(0.95); }
+  .btn:focus-visible{ outline: 2px solid var(--primary-focus); outline-offset: 2px; }
+  .btn-primary{ background: var(--primary); color: var(--on-primary); }
+  .btn-primary:hover{ background: var(--primary-focus); }
+  .btn-primary:disabled{ background: var(--disabled); color: var(--text-disabled); cursor:not-allowed; transform:none; }
+  .btn-secondary{ background: transparent; color: var(--primary); border:1px solid var(--primary); }
+  .btn-secondary:hover{ background: var(--primary-soft); }
+  .btn-dark-sm{
+    background: var(--surface); color: var(--muted-80); border:1px solid var(--hairline);
+    padding:7px 14px; font-size:13px; font-weight:400; letter-spacing:-0.224px; border-radius:var(--radius-md);
+    transition: background-color .15s ease, border-color .15s ease, transform .1s ease;
+  }
+  .btn-dark-sm:hover{ background:var(--surface-pearl); border-color:var(--hairline-strong); }
+  .btn-dark-sm:active{ transform: scale(0.95); }
+
+  .form-actions{ display:flex; justify-content:center; gap:16px; margin-top:8px; }
+
+  .section-title{
+    font-family: var(--font-display); font-size:19px; font-weight:600; letter-spacing:-0.01em; color:var(--text);
+    margin: 0 0 14px; padding-top:8px; border-top:1px solid var(--hairline-strong);
+  }
+  .field-group.no-border .section-title{ border-top:none; padding-top:0; }
+
+  .select-wrap{ position:relative; }
+  select.input{ appearance:none; -webkit-appearance:none; cursor:pointer; }
+  .select-wrap::after{ content:"▾"; position:absolute; right:16px; top:50%; transform:translateY(-50%); pointer-events:none; color:var(--muted); }
+
+  /* dynamic / fixed data tables (색상별 재고, 요금제 설정, 제휴카드) */
+  .dtable-wrap{ overflow-x:auto; }
+  table.dtable{ width:100%; border-collapse:collapse; min-width:560px; }
+  table.dtable th, table.dtable td{ border:1px solid var(--hairline); padding:10px 10px; font-size:13px; vertical-align:middle; }
+  table.dtable th{ background: var(--header-bg); font-weight:600; color:var(--muted); text-align:left; white-space:nowrap; }
+  table.dtable td.col-order{ width:48px; text-align:center; color:var(--muted); font-family:var(--font-mono); }
+  table.dtable td.col-actions{ width:84px; text-align:center; }
+  input.cell-input{
+    width:100%; padding:8px 10px; font-size:13px; border:1px solid var(--hairline); border-radius:var(--radius-sm);
+    font-family:inherit; color:var(--text); background:var(--surface);
+  }
+  input.cell-input:focus{ outline:none; border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-soft); }
+  input.cell-input.error{ border-color:var(--error); }
+  .swatch-cell{ display:flex; align-items:center; gap:8px; }
+  .swatch-cell .hash{ color:var(--muted); flex-shrink:0; }
+  .color-swatch{ width:28px; height:28px; border-radius:6px; border:1px solid var(--hairline-strong); flex-shrink:0; background:var(--disabled); }
+  .table-actions{ margin-top:10px; }
+
+  /* result table */
+  .result-section{ margin-bottom:36px; }
+  .result-section h3{ font-family: var(--font-display); font-size:17px; font-weight:600; letter-spacing:-0.01em; color:var(--text); margin:0 0 12px; }
+  table.desc-table{ width:100%; border-collapse:collapse; }
+  table.desc-table td, table.desc-table th{ border:none; border-bottom:1px solid var(--divider); padding:14px 18px; font-size:14px; vertical-align:top; text-align:left; }
+  table.desc-table tr:last-child td{ border-bottom:none; }
+  table.desc-table td.label-cell{ background: var(--header-bg); width:220px; font-weight:600; color:var(--muted); }
+  table.desc-table td.plain{ white-space:pre-wrap; word-break:break-word; }
+  table.desc-table thead th{ background: var(--header-bg); font-weight:600; color:var(--muted); }
+
+  @media (max-width: 640px){
+    .card{ padding:20px; }
+    table.desc-table td.label-cell{ width:120px; }
+  }
+
+  .update-banner{
+    position: fixed; top:0; left:0; right:0; z-index: 1000;
+    background: var(--primary); color:var(--on-primary); text-align:center;
+    padding:12px 20px; font-size:14px; font-weight:400;
+    display:none; align-items:center; justify-content:center; gap:14px;
+  }
+  .update-banner.show{ display:flex; }
+  .update-banner button{
+    background:var(--on-primary); color:var(--primary); border:none; border-radius:var(--radius-pill);
+    padding:6px 16px; font-size:13px; font-weight:400; cursor:pointer; font-family:inherit;
+  }
+  .toast{
+    position: fixed; bottom: 32px; left:50%; transform: translateX(-50%);
+    background: var(--scrim); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
+    color:var(--on-primary); padding:14px 24px; border-radius:var(--radius-pill); font-size:14px;
+    opacity:0; pointer-events:none; transition: opacity .2s ease; z-index: 999;
+  }
+  .toast.show{ opacity:1; }
+</style>
+</head>
+<body>
+<div id="updateBanner" class="update-banner">
+  <span>새 버전이 있습니다. 새로고침하면 최신 화면으로 업데이트됩니다.</span>
+  <button id="updateBannerBtn" type="button">새로고침</button>
+</div>
+<div class="page">
+  <div class="page-header">
+    <div class="eyebrow">Device Request Form <span class="version-tag" id="versionTag"></span></div>
+    <h1>단말 판매 요청서</h1>
+    <p>아래 항목을 입력하면 단말 판매 요청서가 자동으로 생성됩니다. 작성 완료 후 &lsquo;복사하기&rsquo;로 요청 내용을 전달해주세요.</p>
+  </div>
+
+  <main>
+  <!-- ===================== FORM VIEW ===================== -->
+  <section id="view-form" class="card">
+
+    <div class="field-group">
+      <label class="field-label req">상품 유형</label>
+      <div class="radio-row">
+        <label class="radio-item"><input type="radio" name="productType" value="general" checked> 일반</label>
+        <label class="radio-item"><input type="radio" name="productType" value="preorder"> 미가입예판</label>
+      </div>
+    </div>
+
+    <div class="field-group no-border">
+      <div class="section-title">단말 정보</div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label req">카테고리 맵핑</label>
+      <div class="select-wrap">
+        <select id="fCategoryMap" class="input">
+          <option value="" disabled selected>선택해주세요.</option>
+          <option value="휴대폰">휴대폰</option>
+          <option value="태블릿">태블릿</option>
+          <option value="스마트워치">스마트워치</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label req">단말 속성</label>
+      <div class="select-wrap">
+        <select id="fDeviceAttr" class="input">
+          <option value="" disabled selected>선택해주세요.</option>
+          <option value="휴대폰">휴대폰</option>
+          <option value="2nd 디바이스">2nd 디바이스</option>
+          <option value="액세서리">액세서리</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field-group hidden" id="deviceTypeWrap">
+      <label class="field-label req">단말 유형</label>
+      <div class="select-wrap">
+        <select id="fDeviceType" class="input"></select>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <div class="row-with-hint">
+        <div>
+          <label class="field-label req">단말 코드</label>
+          <input id="fDeviceCode" class="input" maxlength="50" placeholder="단말코드를 입력해주세요.">
+          <p class="error-msg" id="err-deviceCode">단말 코드는 필수 입력입니다.</p>
+        </div>
+        <span class="hint">한글 불가 / 최대 50자</span>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <div class="row-with-hint">
+        <div>
+          <label class="field-label req">단말명(펫네임)</label>
+          <input id="fDeviceNickname" class="input" maxlength="50" placeholder="단말명(펫네임)을 입력해주세요.">
+          <p class="error-msg" id="err-deviceNickname">단말명(펫네임)은 필수 입력입니다.</p>
+        </div>
+        <span class="hint">한글 불가 / 최대 50자</span>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <div class="row-with-hint">
+        <div>
+          <label class="field-label req">출고 가격(원)</label>
+          <input id="fReleasePrice" class="input" inputmode="numeric" placeholder="출고 가격을 입력해주세요.">
+          <p class="error-msg" id="err-releasePrice">출고 가격(원)은 필수 입력입니다.</p>
+        </div>
+        <span class="hint">숫자만 입력</span>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label req">단말 용량(상세 노출)</label>
+      <div class="checkbox-row" id="capacityRow"></div>
+      <p class="error-msg" id="err-capacity">단말 용량은 1개 이상 선택해주세요.</p>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label req">출시일자</label>
+      <div id="dtSlotRelease"></div>
+      <p class="error-msg" id="err-releaseDt">출시일자는 필수 입력입니다.</p>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label" id="labelPreorder">사전예약 기간</label>
+      <div id="dtSlotPreorder"></div>
+      <p class="error-msg" id="err-preorderDt">사전예약 기간은 필수 입력입니다.</p>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label" id="labelPreact">사전개통 기간</label>
+      <div id="dtSlotPreact"></div>
+      <p class="error-msg" id="err-preactDt">사전개통 기간은 필수 입력입니다.</p>
+    </div>
+
+    <div class="field-group no-border">
+      <div class="section-title">단말 상세 스펙</div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label req">디스플레이</label>
+      <input id="fDisplay" class="input" maxlength="500" placeholder="디스플레이 정보를 입력해주세요.">
+      <p class="error-msg" id="err-display">디스플레이는 필수 입력입니다.</p>
+    </div>
+    <div class="field-group">
+      <label class="field-label req">배터리</label>
+      <input id="fBattery" class="input" maxlength="500" placeholder="배터리 정보를 입력해주세요.">
+      <p class="error-msg" id="err-battery">배터리는 필수 입력입니다.</p>
+    </div>
+    <div class="field-group">
+      <label class="field-label req">CPU</label>
+      <input id="fCpu" class="input" maxlength="500" placeholder="CPU 정보를 입력해주세요.">
+      <p class="error-msg" id="err-cpu">CPU는 필수 입력입니다.</p>
+    </div>
+    <div class="field-group">
+      <label class="field-label req">무게</label>
+      <input id="fWeight" class="input" maxlength="500" placeholder="무게 정보를 입력해주세요.">
+      <p class="error-msg" id="err-weight">무게는 필수 입력입니다.</p>
+    </div>
+    <div class="field-group">
+      <label class="field-label req">사이즈</label>
+      <input id="fSize" class="input" maxlength="500" placeholder="사이즈 정보를 입력해주세요.">
+      <p class="error-msg" id="err-size">사이즈는 필수 입력입니다.</p>
+    </div>
+    <div class="field-group">
+      <label class="field-label req">방수</label>
+      <input id="fWaterproof" class="input" maxlength="500" placeholder="방수 정보를 입력해주세요.">
+      <p class="error-msg" id="err-waterproof">방수는 필수 입력입니다.</p>
+    </div>
+    <div class="field-group">
+      <label class="field-label req">카메라</label>
+      <input id="fCamera" class="input" maxlength="500" placeholder="카메라 정보를 입력해주세요.">
+      <p class="error-msg" id="err-camera">카메라는 필수 입력입니다.</p>
+    </div>
+
+    <div class="field-group no-border">
+      <div class="section-title">단말 색상별 재고</div>
+    </div>
+    <div class="field-group">
+      <div class="dtable-wrap">
+        <table class="dtable">
+          <thead><tr>
+            <th>순서</th><th>U-Cube 컬러코드</th><th>노출 컬러명</th><th>RGB</th><th>안전재고</th><th>추가/삭제</th>
+          </tr></thead>
+          <tbody id="colorStockBody"></tbody>
+        </table>
+      </div>
+      <div class="table-actions"><button type="button" class="btn-dark-sm" id="btnAddColorRow">행 추가</button></div>
+    </div>
+
+    <div class="field-group no-border">
+      <div class="section-title">판매 정보</div>
+    </div>
+    <div class="field-group">
+      <label class="field-label req">기본가입유형</label>
+      <div class="radio-row">
+        <label class="radio-item"><input type="radio" name="joinType" value="기기변경"> 기기변경</label>
+        <label class="radio-item"><input type="radio" name="joinType" value="번호이동"> 번호이동</label>
+        <label class="radio-item"><input type="radio" name="joinType" value="신규가입"> 신규가입</label>
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label req">배송방법</label>
+      <div class="checkbox-row">
+        <label class="checkbox-item"><input type="checkbox" name="delivery" value="택배배송" checked> 택배배송</label>
+        <label class="checkbox-item"><input type="checkbox" name="delivery" value="당일택배"> 당일택배</label>
+        <label class="checkbox-item"><input type="checkbox" name="delivery" value="오늘배송"> 오늘배송</label>
+        <label class="checkbox-item"><input type="checkbox" name="delivery" value="새벽배송"> 새벽배송</label>
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label req">불용폰 판매 여부</label>
+      <div class="radio-row">
+        <label class="radio-item"><input type="radio" name="unusedPhone" value="Y"> Y</label>
+        <label class="radio-item"><input type="radio" name="unusedPhone" value="N"> N</label>
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label req">분실/파손 보상 여부</label>
+      <div class="radio-row">
+        <label class="radio-item"><input type="radio" name="lossDamage" value="Y"> Y</label>
+        <label class="radio-item"><input type="radio" name="lossDamage" value="N"> N</label>
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label req">폰교체 보상 여부</label>
+      <div class="radio-row">
+        <label class="radio-item"><input type="radio" name="phoneReplace" value="Y"> Y</label>
+        <label class="radio-item"><input type="radio" name="phoneReplace" value="N"> N</label>
+      </div>
+    </div>
+
+    <div class="field-group no-border">
+      <div class="section-title">요금제 정보</div>
+    </div>
+    <div class="field-group">
+      <div class="row-with-hint">
+        <div>
+          <label class="field-label req">요금제 매핑 단말</label>
+          <input id="fPlanMappingDevice" class="input" maxlength="50" placeholder="요금제 매핑 단말을 입력해주세요.">
+          <p class="error-msg" id="err-planMappingDevice">요금제 매핑 단말은 필수 입력입니다.</p>
+        </div>
+        <span class="hint">한글 불가 / 최대 50자</span>
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label req">요금제 설정</label>
+      <div class="dtable-wrap">
+        <table class="dtable">
+          <thead><tr><th>순서</th><th>라벨</th><th>요금제명</th><th>요금제 코드</th></tr></thead>
+          <tbody id="planSettingBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="field-group no-border">
+      <div class="section-title">신청 정보</div>
+    </div>
+    <div class="field-group">
+      <label class="field-label req">중고폰 가격 보장 프로그램 전시</label>
+      <div class="radio-row">
+        <label class="radio-item"><input type="radio" name="usedPhoneGuarantee" value="Y"> Y</label>
+        <label class="radio-item"><input type="radio" name="usedPhoneGuarantee" value="N"> N</label>
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label req">중고폰 반납 신청 여부 전시</label>
+      <div class="radio-row">
+        <label class="radio-item"><input type="radio" name="usedPhoneReturn" value="Y"> Y</label>
+        <label class="radio-item"><input type="radio" name="usedPhoneReturn" value="N"> N</label>
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label req">제휴카드 전시 순서</label>
+      <div class="dtable-wrap">
+        <table class="dtable">
+          <thead><tr><th>순서</th><th>카드명</th><th>추가/삭제</th></tr></thead>
+          <tbody id="partnerCardBody"></tbody>
+        </table>
+      </div>
+      <div class="table-actions"><button type="button" class="btn-dark-sm" id="btnAddPartnerRow">행 추가</button></div>
+    </div>
+
+    <div class="field-group no-border">
+      <div class="section-title">사은품 정보</div>
+    </div>
+    <div class="field-group">
+      <label class="field-label req">사은품 정보</label>
+      <textarea id="fGiftInfo" class="input" placeholder="사은품 정보를 입력해주세요."></textarea>
+      <p class="error-msg" id="err-giftInfo">사은품 정보는 필수 입력입니다.</p>
+    </div>
+
+    <div class="form-actions">
+      <button id="btnDraftSave" class="btn btn-secondary">초안 백업하기</button>
+      <button id="btnSubmit" class="btn btn-primary" disabled>완료</button>
+    </div>
+  </section>
+
+  <!-- ===================== RESULT VIEW ===================== -->
+  <section id="view-result" class="card hidden">
+    <div class="page-header" style="margin-bottom:24px;">
+      <h1 style="font-size:22px;">단말 판매 요청서</h1>
+    </div>
+    <div id="resultContent"></div>
+    <p id="copyHelp" class="hidden" style="text-align:center;color:var(--muted);font-size:13px;margin:-8px 0 8px;">
+      한 번에 복사가 안 될 경우, 위 표 영역을 마우스로 드래그해 직접 선택한 뒤 Ctrl+C(Mac: ⌘+C)로 복사해주세요.
+    </p>
+    <div class="form-actions">
+      <button id="btnRestart" class="btn btn-secondary">다시 작성하기</button>
+      <button id="btnSelectAll" class="btn btn-secondary">표 전체 선택</button>
+      <button id="btnCopy" class="btn btn-primary">복사하기</button>
+    </div>
+  </section>
+  </main>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  var APP_VERSION = "1.0";
+
+  function $(sel, root){ return (root||document).querySelector(sel); }
+  function $all(sel, root){ return Array.from((root||document).querySelectorAll(sel)); }
+  function el(tag, cls, html){ var e=document.createElement(tag); if(cls) e.className=cls; if(html!==undefined) e.innerHTML=html; return e; }
+  var versionTagEl = $('#versionTag');
+  if(versionTagEl) versionTagEl.textContent = 'v' + APP_VERSION;
+  function showToast(msg){
+    var t = $('#toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(showToast._tm);
+    showToast._tm = setTimeout(function(){ t.classList.remove('show'); }, 2200);
+  }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; }); }
+  function stripKorean(v){ return v.replace(/[가-힣ㄱ-ㅎㅏ-ㅣ]/g,''); }
+  function blockKorean(input){
+    input.addEventListener('input', function(){
+      var v = stripKorean(input.value);
+      if(v !== input.value) input.value = v;
+    });
+  }
+  function formatPriceInput(v){
+    var digits = v.replace(/\D/g,'').slice(0,13);
+    return digits ? Number(digits).toLocaleString('en-US') : '';
+  }
+
+  // ---------- generic required-field wiring ----------
+  function bindRequired(input, errEl, opts){
+    opts = opts || {};
+    function check(){
+      var bad = !input.value.trim();
+      input.classList.toggle('error', bad);
+      if(errEl) errEl.classList.toggle('show', bad);
+      return !bad;
+    }
+    input.addEventListener('blur', check);
+    input.addEventListener('input', function(){
+      if(opts.transform){
+        var pos = input.selectionStart;
+        input.value = opts.transform(input.value);
+      }
+      if(input.value.trim()){ input.classList.remove('error'); if(errEl) errEl.classList.remove('show'); }
+    });
+    return check;
+  }
+  bindRequired($('#fDeviceCode'), $('#err-deviceCode')); blockKorean($('#fDeviceCode'));
+  bindRequired($('#fDeviceNickname'), $('#err-deviceNickname')); blockKorean($('#fDeviceNickname'));
+  bindRequired($('#fReleasePrice'), $('#err-releasePrice'), { transform: formatPriceInput });
+  bindRequired($('#fDisplay'), $('#err-display'));
+  bindRequired($('#fBattery'), $('#err-battery'));
+  bindRequired($('#fCpu'), $('#err-cpu'));
+  bindRequired($('#fWeight'), $('#err-weight'));
+  bindRequired($('#fSize'), $('#err-size'));
+  bindRequired($('#fWaterproof'), $('#err-waterproof'));
+  bindRequired($('#fCamera'), $('#err-camera'));
+  bindRequired($('#fPlanMappingDevice'), $('#err-planMappingDevice')); blockKorean($('#fPlanMappingDevice'));
+  var fGiftInfo = $('#fGiftInfo');
+  bindRequired(fGiftInfo, $('#err-giftInfo'));
+  fGiftInfo.addEventListener('input', function(){ fGiftInfo.style.height='auto'; fGiftInfo.style.height=(fGiftInfo.scrollHeight)+'px'; });
+
+  function bindRequiredSelect(select, errEl){
+    function check(){ var bad = !select.value; select.classList.toggle('error', bad); if(errEl) errEl.classList.toggle('show', bad); return !bad; }
+    select.addEventListener('blur', check);
+    select.addEventListener('change', function(){ if(select.value){ select.classList.remove('error'); if(errEl) errEl.classList.remove('show'); } });
+    return check;
+  }
+  bindRequiredSelect($('#fCategoryMap'));
+  bindRequiredSelect($('#fDeviceAttr'));
+
+  // ---------- 단말 속성 -> 단말 유형 conditional options ----------
+  var fDeviceAttr = $('#fDeviceAttr'), fDeviceType = $('#fDeviceType'), deviceTypeWrap = $('#deviceTypeWrap');
+  var deviceTypeOptions = {
+    '휴대폰': ['5G폰','LTE폰','일반폰'],
+    '2nd 디바이스': ['태블릿','워치','노트북'],
+    '액세서리': []
+  };
+  function updateDeviceTypeOptions(){
+    var opts = deviceTypeOptions[fDeviceAttr.value] || [];
+    if(!opts.length){
+      deviceTypeWrap.classList.add('hidden');
+      fDeviceType.innerHTML = '';
+    } else {
+      deviceTypeWrap.classList.remove('hidden');
+      fDeviceType.innerHTML = '<option value="" disabled selected>선택해주세요.</option>' +
+        opts.map(function(o){ return '<option value="'+esc(o)+'">'+esc(o)+'</option>'; }).join('');
+    }
+  }
+  fDeviceAttr.addEventListener('change', updateDeviceTypeOptions);
+
+  // ---------- 단말 용량 (multi checkbox) ----------
+  var capacityOptions = ['2TB','1TB','512GB','256GB','128GB','64GB','32GB','16GB','기타'];
+  $('#capacityRow').innerHTML = capacityOptions.map(function(c){
+    return '<label class="checkbox-item"><input type="checkbox" name="capacity" value="'+c+'"> '+c+'</label>';
+  }).join('');
+  $all('input[name=capacity]').forEach(function(cb){
+    cb.addEventListener('change', function(){
+      if($all('input[name=capacity]:checked').length){ $('#err-capacity').classList.remove('show'); }
+    });
+  });
+
+  // ---------- date/time helpers (same masking logic as the event-request-form tool) ----------
+  function maskDateValue(raw){
+    var digits = raw.replace(/\D/g,'').slice(0,8);
+    var y = digits.slice(0,4), m = digits.slice(4,6), d = digits.slice(6,8);
+    var out = y; if(m) out += '-'+m; if(d) out += '-'+d; return out;
+  }
+  function maskTimeValue(raw){
+    var digits = raw.replace(/\D/g,'').slice(0,6);
+    var h = digits.slice(0,2), m = digits.slice(2,4), s = digits.slice(4,6);
+    var out = h; if(m) out += ':'+m; if(s) out += ':'+s; return out;
+  }
+  function attachMask(input, maskFn){ input.addEventListener('input', function(){ input.value = maskFn(input.value); }); }
+  function parseDateStr(v){
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v||''); if(!m) return null;
+    var y=+m[1], mo=+m[2], d=+m[3]; var dt = new Date(y, mo-1, d);
+    if(dt.getFullYear()!==y || dt.getMonth()!==mo-1 || dt.getDate()!==d) return null;
+    return dt;
+  }
+  function isValidTimeStr(v){
+    var m = /^(\d{2}):(\d{2}):(\d{2})$/.exec(v||''); if(!m) return false;
+    var h=+m[1], mi=+m[2], s=+m[3]; return h<=23 && mi<=59 && s<=59;
+  }
+  function svgCalendar(){ return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 3v4M16 3v4M3 10h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'; }
+  function svgClock(){ return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'; }
+  function dateTimePairHtml(dateId, timeId){
+    return '' +
+      '<div class="picker-field date-field"><input id="'+dateId+'" class="input" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD" maxlength="10">' +
+      '<button type="button" class="icon-btn" data-native="'+dateId+'Native" aria-label="달력 열기">'+svgCalendar()+'</button>' +
+      '<input type="date" id="'+dateId+'Native" class="native-picker" tabindex="-1" aria-hidden="true"></div>' +
+      '<div class="picker-field time-field"><input id="'+timeId+'" class="input" inputmode="numeric" autocomplete="off" placeholder="HH:MM:SS" maxlength="8">' +
+      '<button type="button" class="icon-btn" data-native="'+timeId+'Native" aria-label="시간 열기">'+svgClock()+'</button>' +
+      '<input type="time" id="'+timeId+'Native" step="1" class="native-picker" tabindex="-1" aria-hidden="true"></div>';
+  }
+  $('#dtSlotRelease').innerHTML = '<div class="period-row">'+dateTimePairHtml('fReleaseDate','fReleaseTime')+'</div>';
+  $('#dtSlotPreorder').innerHTML = '<div class="period-row">'+dateTimePairHtml('fPreorderStartDate','fPreorderStartTime')+'<span class="period-dash">-</span>'+dateTimePairHtml('fPreorderEndDate','fPreorderEndTime')+'</div>';
+  $('#dtSlotPreact').innerHTML = '<div class="period-row">'+dateTimePairHtml('fPreactStartDate','fPreactStartTime')+'<span class="period-dash">-</span>'+dateTimePairHtml('fPreactEndDate','fPreactEndTime')+'</div>';
+
+  function wireNativePicker(textInput, nativeInput, formatFn){
+    nativeInput.addEventListener('change', function(){
+      if(nativeInput.value){
+        textInput.value = formatFn(nativeInput.value);
+        textInput.dispatchEvent(new Event('input'));
+        textInput.dispatchEvent(new Event('blur'));
+      }
+    });
+  }
+  function wireDateTimePair(dateId, timeId){
+    var d = document.getElementById(dateId), t = document.getElementById(timeId);
+    attachMask(d, maskDateValue); attachMask(t, maskTimeValue);
+    wireNativePicker(d, document.getElementById(dateId+'Native'), function(v){ return v; });
+    wireNativePicker(t, document.getElementById(timeId+'Native'), function(v){ return v.length===5 ? v+':00' : v; });
+    return [d, t];
+  }
+  var releasePair = wireDateTimePair('fReleaseDate','fReleaseTime');
+  var preorderStartPair = wireDateTimePair('fPreorderStartDate','fPreorderStartTime');
+  var preorderEndPair = wireDateTimePair('fPreorderEndDate','fPreorderEndTime');
+  var preactStartPair = wireDateTimePair('fPreactStartDate','fPreactStartTime');
+  var preactEndPair = wireDateTimePair('fPreactEndDate','fPreactEndTime');
+  $all('.icon-btn[data-native]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var native = document.getElementById(btn.dataset.native);
+      if(native && typeof native.showPicker === 'function'){ try{ native.showPicker(); }catch(e){} }
+      else if(native){ native.focus(); }
+    });
+  });
+
+  function pairFilled(p){ return !!(p[0].value && p[1].value); }
+  function pairFormatOk(p){
+    var dOk = !p[0].value || !!parseDateStr(p[0].value);
+    var tOk = !p[1].value || isValidTimeStr(p[1].value);
+    return dOk && tOk;
+  }
+  function validateDtGroup(pairs, errElId, required, label){
+    var msgEl = document.getElementById(errElId);
+    if(!required){
+      pairs.forEach(function(p){ p[0].classList.remove('error'); p[1].classList.remove('error'); });
+      msgEl.classList.remove('show');
+      return true;
+    }
+    var anyInput = pairs.some(function(p){ return p[0].value || p[1].value; });
+    var formatOk = pairs.every(pairFormatOk);
+    var complete = pairs.every(pairFilled);
+    pairs.forEach(function(p){ p[0].classList.toggle('error', !complete); p[1].classList.toggle('error', !complete); });
+    if(anyInput && !formatOk){ msgEl.textContent = '날짜 형식이 올바르지 않습니다.'; msgEl.classList.add('show'); }
+    else if(!complete){ msgEl.textContent = label+'은 필수 입력입니다.'; msgEl.classList.add('show'); }
+    else { msgEl.classList.remove('show'); }
+    return complete;
+  }
+  function isPreorderType(){ return $('input[name=productType]:checked').value === 'preorder'; }
+  releasePair.forEach(function(inp){
+    inp.addEventListener('blur', function(){ validateDtGroup([releasePair], 'err-releaseDt', true, '출시일자'); });
+    inp.addEventListener('input', function(){ if(pairFilled(releasePair)) validateDtGroup([releasePair], 'err-releaseDt', true, '출시일자'); });
+  });
+  [preorderStartPair, preorderEndPair].forEach(function(pair){
+    pair.forEach(function(inp){
+      inp.addEventListener('blur', function(){ validateDtGroup([preorderStartPair, preorderEndPair], 'err-preorderDt', isPreorderType(), '사전예약 기간'); });
+      inp.addEventListener('input', function(){ if(pairFilled(preorderStartPair) && pairFilled(preorderEndPair)) validateDtGroup([preorderStartPair, preorderEndPair], 'err-preorderDt', isPreorderType(), '사전예약 기간'); });
+    });
+  });
+  [preactStartPair, preactEndPair].forEach(function(pair){
+    pair.forEach(function(inp){
+      inp.addEventListener('blur', function(){ validateDtGroup([preactStartPair, preactEndPair], 'err-preactDt', isPreorderType(), '사전개통 기간'); });
+      inp.addEventListener('input', function(){ if(pairFilled(preactStartPair) && pairFilled(preactEndPair)) validateDtGroup([preactStartPair, preactEndPair], 'err-preactDt', isPreorderType(), '사전개통 기간'); });
+    });
+  });
+
+  // ---------- 상품 유형: '일반' 선택 시 사전예약/사전개통 비활성화 ----------
+  function updateProductTypeUI(){
+    var general = !isPreorderType();
+    [preorderStartPair, preorderEndPair, preactStartPair, preactEndPair].forEach(function(pair){
+      pair.forEach(function(inp){ inp.disabled = general; if(general){ inp.value=''; inp.classList.remove('error'); } });
+    });
+    $('#labelPreorder').classList.toggle('req', !general);
+    $('#labelPreact').classList.toggle('req', !general);
+    if(general){ $('#err-preorderDt').classList.remove('show'); $('#err-preactDt').classList.remove('show'); }
+  }
+  $all('input[name=productType]').forEach(function(r){ r.addEventListener('change', updateProductTypeUI); });
+
+  // ---------- dynamic tables ----------
+  function renumberRows(tbody){
+    $all('tr', tbody).forEach(function(tr, i){ var c = $('.col-order', tr); if(c) c.textContent = String(i+1); });
+  }
+  var colorStockBody = $('#colorStockBody');
+  function makeColorRow(){
+    var tr = el('tr');
+    tr.innerHTML =
+      '<td class="col-order"></td>' +
+      '<td><input class="cell-input cs-code" maxlength="10" placeholder="컬러코드"></td>' +
+      '<td><input class="cell-input cs-name" maxlength="50" placeholder="노출 컬러명을 입력해주세요."></td>' +
+      '<td><div class="swatch-cell"><span class="hash">#</span><input class="cell-input cs-rgb" maxlength="6" placeholder="000000"><span class="color-swatch cs-swatch"></span></div></td>' +
+      '<td><input class="cell-input cs-stock" maxlength="5" inputmode="numeric" placeholder="-9999~9999"></td>' +
+      '<td class="col-actions"><button type="button" class="btn-dark-sm cs-remove">삭제</button></td>';
+    var codeInput = $('.cs-code', tr); blockKorean(codeInput);
+    var rgbInput = $('.cs-rgb', tr);
+    rgbInput.addEventListener('input', function(){ rgbInput.value = rgbInput.value.replace(/[^0-9a-fA-F]/g,'').slice(0,6); });
+    function updateSwatch(){ var v = rgbInput.value; $('.cs-swatch', tr).style.background = /^[0-9a-fA-F]{6}$/.test(v) ? '#'+v : ''; }
+    rgbInput.addEventListener('blur', updateSwatch);
+    rgbInput.addEventListener('keydown', function(e){ if(e.key==='Enter'){ updateSwatch(); } });
+    var stockInput = $('.cs-stock', tr);
+    stockInput.addEventListener('input', function(){ stockInput.value = stockInput.value.replace(/[^0-9-]/g,''); });
+    $('.cs-remove', tr).addEventListener('click', function(){
+      if($all('tr', colorStockBody).length <= 1){ alert('더이상 삭제할 수 없습니다.'); return; }
+      colorStockBody.removeChild(tr); renumberRows(colorStockBody);
+    });
+    return tr;
+  }
+  $('#btnAddColorRow').addEventListener('click', function(){ colorStockBody.appendChild(makeColorRow()); renumberRows(colorStockBody); });
+  colorStockBody.appendChild(makeColorRow()); renumberRows(colorStockBody);
+
+  var partnerCardBody = $('#partnerCardBody');
+  function makePartnerRow(){
+    var tr = el('tr');
+    tr.innerHTML =
+      '<td class="col-order"></td>' +
+      '<td><input class="cell-input pc-name" maxlength="100" placeholder="제휴카드명을 입력해주세요."></td>' +
+      '<td class="col-actions"><button type="button" class="btn-dark-sm pc-remove">삭제</button></td>';
+    $('.pc-remove', tr).addEventListener('click', function(){
+      if($all('tr', partnerCardBody).length <= 1){ alert('더이상 삭제할 수 없습니다.'); return; }
+      partnerCardBody.removeChild(tr); renumberRows(partnerCardBody);
+    });
+    return tr;
+  }
+  $('#btnAddPartnerRow').addEventListener('click', function(){ partnerCardBody.appendChild(makePartnerRow()); renumberRows(partnerCardBody); });
+  partnerCardBody.appendChild(makePartnerRow()); renumberRows(partnerCardBody);
+
+  // 요금제 설정: fixed 3 rows, no add/delete
+  var planSettingBody = $('#planSettingBody');
+  for(var pi=1; pi<=3; pi++){
+    var ptr = el('tr');
+    ptr.innerHTML =
+      '<td class="col-order">'+pi+'</td>' +
+      '<td><input class="cell-input ps-label" maxlength="16" placeholder="라벨"></td>' +
+      '<td><input class="cell-input ps-name" maxlength="50" placeholder="요금제명을 입력해주세요."></td>' +
+      '<td><input class="cell-input ps-code" maxlength="50" placeholder="요금제 코드"></td>';
+    blockKorean($('.ps-code', ptr));
+    planSettingBody.appendChild(ptr);
+  }
+
+  // ---------- overall form validity: gates the 완료 button ----------
+  function radioChecked(name){ var r = $('input[name="'+name+'"]:checked'); return r ? r.value : null; }
+  function formValid(){
+    if(!radioChecked('productType')) return false;
+    if(!$('#fCategoryMap').value) return false;
+    if(!fDeviceAttr.value) return false;
+    if(!deviceTypeWrap.classList.contains('hidden') && !fDeviceType.value) return false;
+    if(!$('#fDeviceCode').value.trim()) return false;
+    if(!$('#fDeviceNickname').value.trim()) return false;
+    if(!$('#fReleasePrice').value.trim()) return false;
+    if(!$all('input[name=capacity]:checked').length) return false;
+    if(!pairFilled(releasePair) || !pairFormatOk(releasePair)) return false;
+    if(isPreorderType()){
+      if(!pairFilled(preorderStartPair) || !pairFilled(preorderEndPair) || !pairFormatOk(preorderStartPair) || !pairFormatOk(preorderEndPair)) return false;
+      if(!pairFilled(preactStartPair) || !pairFilled(preactEndPair) || !pairFormatOk(preactStartPair) || !pairFormatOk(preactEndPair)) return false;
+    }
+    var device2 = ['fDisplay','fBattery','fCpu','fWeight','fSize','fWaterproof','fCamera'];
+    for(var i=0;i<device2.length;i++){ if(!$('#'+device2[i]).value.trim()) return false; }
+    var colorRowsValid = $all('tr', colorStockBody).every(function(tr){
+      var code = $('.cs-code', tr).value.trim(), name = $('.cs-name', tr).value.trim();
+      var rgb = $('.cs-rgb', tr).value.trim(), stock = $('.cs-stock', tr).value.trim();
+      if(!code || !name || !/^[0-9a-fA-F]{6}$/.test(rgb) || stock==='') return false;
+      var n = Number(stock);
+      return !isNaN(n) && n>=-9999 && n<=9999;
+    });
+    if(!colorRowsValid) return false;
+    if(!radioChecked('joinType')) return false;
+    if(!$all('input[name=delivery]:checked').length) return false;
+    if(!radioChecked('unusedPhone')) return false;
+    if(!radioChecked('lossDamage')) return false;
+    if(!radioChecked('phoneReplace')) return false;
+    if(!$('#fPlanMappingDevice').value.trim()) return false;
+    var planRowsValid = $all('tr', planSettingBody).every(function(tr){
+      return $('.ps-label', tr).value.trim() && $('.ps-name', tr).value.trim() && $('.ps-code', tr).value.trim();
+    });
+    if(!planRowsValid) return false;
+    if(!radioChecked('usedPhoneGuarantee')) return false;
+    if(!radioChecked('usedPhoneReturn')) return false;
+    var partnerRowsValid = $all('tr', partnerCardBody).every(function(tr){ return $('.pc-name', tr).value.trim(); });
+    if(!partnerRowsValid) return false;
+    if(!fGiftInfo.value.trim()) return false;
+    return true;
+  }
+  function recomputeSubmitEnabled(){ $('#btnSubmit').disabled = !formValid(); }
+  $('#view-form').addEventListener('input', recomputeSubmitEnabled);
+  $('#view-form').addEventListener('change', recomputeSubmitEnabled);
+
+  // ---------- draft backup (localStorage) ----------
+  var DRAFT_KEY = 'deviceRequestFormDraft';
+  function serializeForm(){
+    return {
+      productType: radioChecked('productType'),
+      categoryMap: $('#fCategoryMap').value,
+      deviceAttr: fDeviceAttr.value,
+      deviceType: fDeviceType.value,
+      deviceCode: $('#fDeviceCode').value,
+      deviceNickname: $('#fDeviceNickname').value,
+      releasePrice: $('#fReleasePrice').value,
+      capacity: $all('input[name=capacity]:checked').map(function(c){ return c.value; }),
+      releaseDate: releasePair[0].value, releaseTime: releasePair[1].value,
+      preorderStartDate: preorderStartPair[0].value, preorderStartTime: preorderStartPair[1].value,
+      preorderEndDate: preorderEndPair[0].value, preorderEndTime: preorderEndPair[1].value,
+      preactStartDate: preactStartPair[0].value, preactStartTime: preactStartPair[1].value,
+      preactEndDate: preactEndPair[0].value, preactEndTime: preactEndPair[1].value,
+      display: $('#fDisplay').value, battery: $('#fBattery').value, cpu: $('#fCpu').value,
+      weight: $('#fWeight').value, size: $('#fSize').value, waterproof: $('#fWaterproof').value, camera: $('#fCamera').value,
+      colorStock: $all('tr', colorStockBody).map(function(tr){
+        return { code:$('.cs-code',tr).value, name:$('.cs-name',tr).value, rgb:$('.cs-rgb',tr).value, stock:$('.cs-stock',tr).value };
+      }),
+      joinType: radioChecked('joinType'),
+      delivery: $all('input[name=delivery]:checked').map(function(c){ return c.value; }),
+      unusedPhone: radioChecked('unusedPhone'), lossDamage: radioChecked('lossDamage'), phoneReplace: radioChecked('phoneReplace'),
+      planMappingDevice: $('#fPlanMappingDevice').value,
+      planSetting: $all('tr', planSettingBody).map(function(tr){
+        return { label:$('.ps-label',tr).value, name:$('.ps-name',tr).value, code:$('.ps-code',tr).value };
+      }),
+      usedPhoneGuarantee: radioChecked('usedPhoneGuarantee'), usedPhoneReturn: radioChecked('usedPhoneReturn'),
+      partnerCards: $all('tr', partnerCardBody).map(function(tr){ return { name:$('.pc-name',tr).value }; }),
+      giftInfo: fGiftInfo.value
+    };
+  }
+  function setRadio(name, value){ if(!value) return; var r = $('input[name="'+name+'"][value="'+value+'"]'); if(r) r.checked = true; }
+  function restoreForm(d){
+    if(!d) return;
+    setRadio('productType', d.productType);
+    $('#fCategoryMap').value = d.categoryMap || '';
+    fDeviceAttr.value = d.deviceAttr || '';
+    updateDeviceTypeOptions();
+    if(d.deviceType) fDeviceType.value = d.deviceType;
+    $('#fDeviceCode').value = d.deviceCode || '';
+    $('#fDeviceNickname').value = d.deviceNickname || '';
+    $('#fReleasePrice').value = d.releasePrice || '';
+    (d.capacity||[]).forEach(function(v){ var cb = $('input[name=capacity][value="'+v+'"]'); if(cb) cb.checked = true; });
+    releasePair[0].value = d.releaseDate||''; releasePair[1].value = d.releaseTime||'';
+    preorderStartPair[0].value = d.preorderStartDate||''; preorderStartPair[1].value = d.preorderStartTime||'';
+    preorderEndPair[0].value = d.preorderEndDate||''; preorderEndPair[1].value = d.preorderEndTime||'';
+    preactStartPair[0].value = d.preactStartDate||''; preactStartPair[1].value = d.preactStartTime||'';
+    preactEndPair[0].value = d.preactEndDate||''; preactEndPair[1].value = d.preactEndTime||'';
+    updateProductTypeUI();
+    $('#fDisplay').value = d.display||''; $('#fBattery').value = d.battery||''; $('#fCpu').value = d.cpu||'';
+    $('#fWeight').value = d.weight||''; $('#fSize').value = d.size||''; $('#fWaterproof').value = d.waterproof||''; $('#fCamera').value = d.camera||'';
+    if(d.colorStock && d.colorStock.length){
+      colorStockBody.innerHTML = '';
+      d.colorStock.forEach(function(row){
+        var tr = makeColorRow();
+        $('.cs-code',tr).value = row.code||''; $('.cs-name',tr).value = row.name||'';
+        $('.cs-rgb',tr).value = row.rgb||''; $('.cs-stock',tr).value = row.stock||'';
+        var sw = $('.cs-swatch', tr); if(/^[0-9a-fA-F]{6}$/.test(row.rgb||'')) sw.style.background = '#'+row.rgb;
+        colorStockBody.appendChild(tr);
+      });
+      renumberRows(colorStockBody);
+    }
+    setRadio('joinType', d.joinType);
+    (d.delivery||[]).forEach(function(v){ var cb = $('input[name=delivery][value="'+v+'"]'); if(cb) cb.checked = true; });
+    if(d.delivery && d.delivery.length){ $all('input[name=delivery]').forEach(function(cb){ if(d.delivery.indexOf(cb.value)===-1) cb.checked = false; }); }
+    setRadio('unusedPhone', d.unusedPhone); setRadio('lossDamage', d.lossDamage); setRadio('phoneReplace', d.phoneReplace);
+    $('#fPlanMappingDevice').value = d.planMappingDevice || '';
+    (d.planSetting||[]).forEach(function(row, i){
+      var tr = $all('tr', planSettingBody)[i]; if(!tr) return;
+      $('.ps-label',tr).value = row.label||''; $('.ps-name',tr).value = row.name||''; $('.ps-code',tr).value = row.code||'';
+    });
+    setRadio('usedPhoneGuarantee', d.usedPhoneGuarantee); setRadio('usedPhoneReturn', d.usedPhoneReturn);
+    if(d.partnerCards && d.partnerCards.length){
+      partnerCardBody.innerHTML = '';
+      d.partnerCards.forEach(function(row){
+        var tr = makePartnerRow(); $('.pc-name',tr).value = row.name||''; partnerCardBody.appendChild(tr);
+      });
+      renumberRows(partnerCardBody);
+    }
+    fGiftInfo.value = d.giftInfo || '';
+    fGiftInfo.dispatchEvent(new Event('input'));
+    recomputeSubmitEnabled();
+  }
+  $('#btnDraftSave').addEventListener('click', function(){
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(serializeForm()));
+    showToast('임시저장 되었습니다.');
+  });
+  (function loadDraftOnStart(){
+    try{
+      var raw = localStorage.getItem(DRAFT_KEY);
+      if(raw){ restoreForm(JSON.parse(raw)); showToast('임시저장된 초안을 불러왔습니다.'); }
+    }catch(e){ /* ignore malformed draft */ }
+  })();
+
+  // ---------- build result sections ----------
+  function selectedCapacities(){ return $all('input[name=capacity]:checked').map(function(c){ return c.value; }); }
+  function dtText(pair){ return pair[0].value && pair[1].value ? (pair[0].value+' '+pair[1].value) : ''; }
+  function rangeText(startPair, endPair){
+    var s = dtText(startPair), e = dtText(endPair);
+    return s && e ? (s+' ~ '+e) : (s || e || '');
+  }
+  function buildSections(){
+    var preorder = isPreorderType();
+    var sections = [];
+    sections.push({ title:'상품 유형', rows:[
+      ['상품 유형', radioChecked('productType')==='general' ? '일반' : '미가입예판']
+    ]});
+    sections.push({ title:'단말 정보', rows:[
+      ['카테고리 맵핑', $('#fCategoryMap').value],
+      ['단말 속성', fDeviceAttr.value],
+      ['단말 유형', deviceTypeWrap.classList.contains('hidden') ? '-' : fDeviceType.value],
+      ['단말 코드', $('#fDeviceCode').value.trim()],
+      ['단말명(펫네임)', $('#fDeviceNickname').value.trim()],
+      ['출고 가격(원)', $('#fReleasePrice').value.trim()],
+      ['단말 용량(상세 노출)', selectedCapacities().join(', ')],
+      ['출시일자', dtText(releasePair)],
+      ['사전예약 기간', preorder ? rangeText(preorderStartPair, preorderEndPair) : '해당없음(일반)'],
+      ['사전개통 기간', preorder ? rangeText(preactStartPair, preactEndPair) : '해당없음(일반)']
+    ]});
+    sections.push({ title:'단말 상세 스펙', rows:[
+      ['디스플레이', $('#fDisplay').value.trim()],
+      ['배터리', $('#fBattery').value.trim()],
+      ['CPU', $('#fCpu').value.trim()],
+      ['무게', $('#fWeight').value.trim()],
+      ['사이즈', $('#fSize').value.trim()],
+      ['방수', $('#fWaterproof').value.trim()],
+      ['카메라', $('#fCamera').value.trim()]
+    ]});
+    sections.push({ title:'단말 색상별 재고', table:{
+      headers:['순서','U-Cube 컬러코드','노출 컬러명','RGB','안전재고'],
+      rows: $all('tr', colorStockBody).map(function(tr, i){
+        return [String(i+1), $('.cs-code',tr).value.trim(), $('.cs-name',tr).value.trim(), '#'+$('.cs-rgb',tr).value.trim(), $('.cs-stock',tr).value.trim()];
+      })
+    }});
+    sections.push({ title:'판매 정보', rows:[
+      ['기본가입유형', radioChecked('joinType')],
+      ['배송방법', $all('input[name=delivery]:checked').map(function(c){ return c.value; }).join(', ')],
+      ['불용폰 판매 여부', radioChecked('unusedPhone')],
+      ['분실/파손 보상 여부', radioChecked('lossDamage')],
+      ['폰교체 보상 여부', radioChecked('phoneReplace')]
+    ]});
+    sections.push({ title:'요금제 정보', rows:[
+      ['요금제 매핑 단말', $('#fPlanMappingDevice').value.trim()]
+    ]});
+    sections.push({ title:'요금제 설정', table:{
+      headers:['순서','라벨','요금제명','요금제 코드'],
+      rows: $all('tr', planSettingBody).map(function(tr, i){
+        return [String(i+1), $('.ps-label',tr).value.trim(), $('.ps-name',tr).value.trim(), $('.ps-code',tr).value.trim()];
+      })
+    }});
+    sections.push({ title:'신청 정보', rows:[
+      ['중고폰 가격 보장 프로그램 전시', radioChecked('usedPhoneGuarantee')],
+      ['중고폰 반납 신청 여부 전시', radioChecked('usedPhoneReturn')]
+    ]});
+    sections.push({ title:'제휴카드 전시 순서', table:{
+      headers:['순서','카드명'],
+      rows: $all('tr', partnerCardBody).map(function(tr, i){ return [String(i+1), $('.pc-name',tr).value.trim()]; })
+    }});
+    sections.push({ title:'사은품 정보', full: fGiftInfo.value.trim() });
+    return sections;
+  }
+
+  function renderScreenHtml(sections){
+    var html = '';
+    sections.forEach(function(sec){
+      var tableHtml;
+      if(sec.full !== undefined){
+        tableHtml = '<table class="desc-table"><tbody><tr><td class="plain">'+esc(sec.full)+'</td></tr></tbody></table>';
+      } else if(sec.table){
+        tableHtml = '<table class="desc-table"><thead><tr>' + sec.table.headers.map(function(h){ return '<th>'+esc(h)+'</th>'; }).join('') + '</tr></thead><tbody>' +
+          sec.table.rows.map(function(r){ return '<tr>'+r.map(function(c){ return '<td class="plain">'+esc(c)+'</td>'; }).join('')+'</tr>'; }).join('') + '</tbody></table>';
+      } else {
+        tableHtml = '<table class="desc-table"><tbody>' + sec.rows.map(function(r){
+          return '<tr><td class="label-cell">'+esc(r[0])+'</td><td class="plain">'+esc(r[1])+'</td></tr>';
+        }).join('') + '</tbody></table>';
+      }
+      html += '<div class="result-section"><h3>'+esc(sec.title)+'</h3>'+tableHtml+'</div>';
+    });
+    return html;
+  }
+
+  function renderCopyHtml(sections){
+    var st = {
+      heading: 'font-family:Arial,\'Malgun Gothic\',sans-serif;font-size:15px;font-weight:bold;color:#080808;margin:0 0 6px;',
+      table: 'border-collapse:collapse;width:100%;font-family:Arial,\'Malgun Gothic\',sans-serif;font-size:13px;color:#080808;margin:0 0 18px;',
+      label: 'border:1px solid #000;background:#dedede;padding:10px 14px;font-weight:bold;width:200px;text-align:left;vertical-align:top;white-space:nowrap;',
+      value: 'border:1px solid #000;padding:10px 14px;text-align:left;vertical-align:top;'
+    };
+    return sections.map(function(sec){
+      var heading = '<p style="'+st.heading+'">'+esc(sec.title)+'</p>';
+      var body;
+      if(sec.full !== undefined){
+        body = '<tr><td style="'+st.value+'">'+esc(sec.full).replace(/\n/g,'<br>')+'</td></tr>';
+      } else if(sec.table){
+        var headRow = '<tr>'+sec.table.headers.map(function(h){ return '<td style="'+st.label+'text-align:center;">'+esc(h)+'</td>'; }).join('')+'</tr>';
+        var bodyRows = sec.table.rows.map(function(r){ return '<tr>'+r.map(function(c){ return '<td style="'+st.value+'">'+esc(c)+'</td>'; }).join('')+'</tr>'; }).join('');
+        body = headRow + bodyRows;
+      } else {
+        body = sec.rows.map(function(r){
+          return '<tr><td style="'+st.label+'">'+esc(r[0])+'</td><td style="'+st.value+'">'+esc(r[1]).replace(/\n/g,'<br>')+'</td></tr>';
+        }).join('');
+      }
+      var table = '<table style="'+st.table+'" cellspacing="0" cellpadding="0" border="1">'+body+'</table>';
+      return heading + table;
+    }).join('');
+  }
+
+  function sanitizeTsvCell(v){ return String(v==null?'':v).replace(/\t/g,' ').replace(/\r?\n/g,' ').trim(); }
+  function buildCopyText(sections){
+    var lines = [];
+    sections.forEach(function(sec){
+      lines.push(sec.title);
+      if(sec.full !== undefined){
+        lines.push(sanitizeTsvCell(sec.full));
+      } else if(sec.table){
+        lines.push(sec.table.headers.map(sanitizeTsvCell).join('\t'));
+        sec.table.rows.forEach(function(r){ lines.push(r.map(sanitizeTsvCell).join('\t')); });
+      } else {
+        sec.rows.forEach(function(r){ lines.push(sanitizeTsvCell(r[0]) + '\t' + sanitizeTsvCell(r[1])); });
+      }
+    });
+    return lines.join('\n');
+  }
+
+  var lastCopyHtml = '', lastCopyText = '';
+  function renderResult(){
+    var sections = buildSections();
+    $('#resultContent').innerHTML = renderScreenHtml(sections);
+    lastCopyHtml = renderCopyHtml(sections);
+    lastCopyText = buildCopyText(sections);
+    $('#copyHelp').classList.add('hidden');
+  }
+
+  $('#btnSubmit').addEventListener('click', function(){
+    if($('#btnSubmit').disabled) return;
+    renderResult();
+    $('#view-form').classList.add('hidden');
+    $('#view-result').classList.remove('hidden');
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  function resetForm(){
+    $all('input[type=text], input:not([type])', $('#view-form')).forEach(function(i){ i.value=''; });
+    $('#fCategoryMap').value = ''; fDeviceAttr.value = ''; updateDeviceTypeOptions();
+    $('#fDeviceCode').value=''; $('#fDeviceNickname').value=''; $('#fReleasePrice').value='';
+    $all('input[name=capacity]').forEach(function(cb){ cb.checked=false; });
+    [releasePair, preorderStartPair, preorderEndPair, preactStartPair, preactEndPair].forEach(function(p){ p[0].value=''; p[1].value=''; p[0].classList.remove('error'); p[1].classList.remove('error'); });
+    $('input[name=productType][value=general]').checked = true;
+    updateProductTypeUI();
+    ['fDisplay','fBattery','fCpu','fWeight','fSize','fWaterproof','fCamera','fPlanMappingDevice'].forEach(function(id){ $('#'+id).value=''; });
+    colorStockBody.innerHTML = ''; colorStockBody.appendChild(makeColorRow()); renumberRows(colorStockBody);
+    partnerCardBody.innerHTML = ''; partnerCardBody.appendChild(makePartnerRow()); renumberRows(partnerCardBody);
+    $all('tr', planSettingBody).forEach(function(tr){ $('.ps-label',tr).value=''; $('.ps-name',tr).value=''; $('.ps-code',tr).value=''; });
+    $all('input[name=joinType], input[name=delivery], input[name=unusedPhone], input[name=lossDamage], input[name=phoneReplace], input[name=usedPhoneGuarantee], input[name=usedPhoneReturn]').forEach(function(i){ i.checked=false; });
+    $('input[name=delivery][value=택배배송]').checked = true;
+    fGiftInfo.value = ''; fGiftInfo.style.height = '';
+    $all('.input.error, .cell-input.error', $('#view-form')).forEach(function(i){ i.classList.remove('error'); });
+    $all('.error-msg.show', $('#view-form')).forEach(function(m){ m.classList.remove('show'); });
+    localStorage.removeItem(DRAFT_KEY);
+    recomputeSubmitEnabled();
+  }
+  $('#btnRestart').addEventListener('click', function(){
+    resetForm();
+    $('#view-result').classList.add('hidden');
+    $('#view-form').classList.remove('hidden');
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  // ---------- copy ----------
+  function copyViaCopyEvent(html, text){
+    var delivered = false;
+    function handler(e){ e.preventDefault(); e.clipboardData.setData('text/html', html); e.clipboardData.setData('text/plain', text); delivered = true; }
+    document.addEventListener('copy', handler);
+    var execOk = false;
+    try{ execOk = document.execCommand('copy'); }catch(e){ execOk = false; }
+    document.removeEventListener('copy', handler);
+    return delivered && execOk;
+  }
+  function plainTextOnlyCopy(text){
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    var ok = false;
+    try{ ok = document.execCommand('copy'); }catch(e){ ok = false; }
+    document.body.removeChild(ta);
+    showToast(ok ? '텍스트로만 복사되었습니다. (표 서식 복사 실패)' : '복사에 실패했습니다.');
+    $('#copyHelp').classList.remove('hidden');
+  }
+  $('#btnCopy').addEventListener('click', function(){
+    var html = lastCopyHtml, text = lastCopyText;
+    if(copyViaCopyEvent(html, text)){
+      showToast('표 형태로 클립보드에 복사되었습니다. (방식: 표준 복사)');
+      $('#copyHelp').classList.add('hidden');
+      return;
+    }
+    if(navigator.clipboard && typeof window.ClipboardItem === 'function'){
+      try{
+        var item = new ClipboardItem({ 'text/html': new Blob([html], {type:'text/html'}), 'text/plain': new Blob([text], {type:'text/plain'}) });
+        navigator.clipboard.write([item]).then(function(){
+          showToast('표 형태로 클립보드에 복사되었습니다. (방식: Clipboard API)');
+          $('#copyHelp').classList.add('hidden');
+        }).catch(function(){ plainTextOnlyCopy(text); });
+      }catch(e){ plainTextOnlyCopy(text); }
+    } else {
+      plainTextOnlyCopy(text);
+    }
+  });
+  $('#btnSelectAll').addEventListener('click', function(){
+    var node = document.getElementById('resultContent');
+    var range = document.createRange();
+    range.selectNodeContents(node);
+    var sel = window.getSelection();
+    sel.removeAllRanges(); sel.addRange(range);
+    showToast('표가 선택되었습니다. Ctrl+C(⌘+C)로 복사해주세요.');
+  });
+
+  // ---------- update check (version.json) ----------
+  function checkForUpdate(){
+    fetch('version.json?_=' + Date.now(), { cache: 'no-store' })
+      .then(function(res){ return res.ok ? res.json() : null; })
+      .then(function(data){
+        if(data && data.version && data.version !== APP_VERSION){ $('#updateBanner').classList.add('show'); }
+      })
+      .catch(function(){ /* offline / opened as a local file / version.json missing */ });
+  }
+  $('#updateBannerBtn').addEventListener('click', function(){ location.reload(); });
+  document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible') checkForUpdate(); });
+
+  // ---------- init ----------
+  updateDeviceTypeOptions();
+  updateProductTypeUI();
+  recomputeSubmitEnabled();
+  checkForUpdate();
+})();
+</script>
+</body>
+</html>
