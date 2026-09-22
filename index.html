@@ -298,18 +298,19 @@
       <p class="error-msg" id="err-releaseDt">출시일자는 필수 입력입니다.</p>
     </div>
 
-    <div class="field-group">
+    <div class="field-group" id="fgPreorder">
       <label class="field-label" id="labelPreorder">사전예약 기간</label>
       <div id="dtSlotPreorder"></div>
       <p class="error-msg" id="err-preorderDt">사전예약 기간은 필수 입력입니다.</p>
     </div>
 
-    <div class="field-group">
+    <div class="field-group" id="fgPreact">
       <label class="field-label" id="labelPreact">사전개통 기간</label>
       <div id="dtSlotPreact"></div>
       <p class="error-msg" id="err-preactDt">사전개통 기간은 필수 입력입니다.</p>
     </div>
 
+    <div id="secDeviceSpec">
     <div class="field-group no-border">
       <div class="section-title">단말 상세 스펙</div>
     </div>
@@ -349,6 +350,7 @@
       <input id="fCamera" class="input" maxlength="500" placeholder="카메라 정보를 입력해주세요.">
       <p class="error-msg" id="err-camera">카메라는 필수 입력입니다.</p>
     </div>
+    </div>
 
     <div class="field-group no-border">
       <div class="section-title">단말 색상별 재고</div>
@@ -365,6 +367,7 @@
       <div class="table-actions"><button type="button" class="btn-dark-sm" id="btnAddColorRow">행 추가</button></div>
     </div>
 
+    <div id="secSaleInfo">
     <div class="field-group no-border">
       <div class="section-title">판매 정보</div>
     </div>
@@ -419,7 +422,9 @@
       </div>
       <p class="error-msg" id="err-phoneReplace">폰교체 보상 여부는 필수 선택입니다.</p>
     </div>
+    </div>
 
+    <div id="secPlanInfo">
     <div class="field-group no-border">
       <div class="section-title">요금제 정보</div>
     </div>
@@ -442,7 +447,9 @@
         </table>
       </div>
     </div>
+    </div>
 
+    <div id="secApplyInfo">
     <div class="field-group no-border">
       <div class="section-title">신청 정보</div>
     </div>
@@ -472,7 +479,9 @@
       </div>
       <div class="table-actions"><button type="button" class="btn-dark-sm" id="btnAddPartnerRow">행 추가</button></div>
     </div>
+    </div>
 
+    <div id="secGiftInfo">
     <div class="field-group no-border">
       <div class="section-title">사은품 정보</div>
     </div>
@@ -480,6 +489,7 @@
       <label class="field-label req">사은품 매핑 단말</label>
       <input id="fGiftInfo" class="input" maxlength="50" placeholder="사은품을 매핑할 기준 단말 코드를 입력해주세요.">
       <p class="error-msg" id="err-giftInfo">사은품 매핑 단말은 필수 입력입니다.</p>
+    </div>
     </div>
 
     <div class="form-actions">
@@ -815,6 +825,28 @@
     planSettingBody.appendChild(ptr);
   }
 
+  // ---------- 단말 속성 = 액세서리: 사전예약/사전개통 기간, 단말 상세 스펙, 판매/요금제/신청/
+  // 사은품 정보 섹션을 통째로 비노출 처리 (색상별 재고 표는 별개로 계속 노출) ----------
+  var accessorySections = ['fgPreorder','fgPreact','secDeviceSpec','secSaleInfo','secPlanInfo','secApplyInfo','secGiftInfo'].map(function(id){ return document.getElementById(id); });
+  function clearAccessoryHiddenFields(){
+    ['fDisplay','fBattery','fCpu','fWeight','fSize','fWaterproof','fCamera','fPlanMappingDevice','fGiftInfo'].forEach(function(id){ $('#'+id).value=''; });
+    [preorderStartPair, preorderEndPair, preactStartPair, preactEndPair].forEach(function(p){ p[0].value=''; p[1].value=''; });
+    $all('input[name=joinType], input[name=unusedPhone], input[name=staffDevice], input[name=lossDamage], input[name=phoneReplace], input[name=usedPhoneGuarantee], input[name=usedPhoneReturn]').forEach(function(i){ i.checked=false; });
+    $all('input[name=delivery]').forEach(function(cb){ cb.checked = (cb.value==='택배배송'); });
+    $all('tr', planSettingBody).forEach(function(tr){ $('.ps-label',tr).value=''; $('.ps-name',tr).value=''; $('.ps-code',tr).value=''; });
+    seedRows(partnerCardBody, makePartnerRow, DEFAULT_PARTNER_ROWS);
+    accessorySections.forEach(function(sec){
+      $all('.input.error, .cell-input.error', sec).forEach(function(i){ i.classList.remove('error'); });
+      $all('.error-msg.show', sec).forEach(function(m){ m.classList.remove('show'); });
+    });
+  }
+  function updateAccessoryVisibility(){
+    var isAccessory = fDeviceAttr.value === '액세서리';
+    accessorySections.forEach(function(sec){ sec.classList.toggle('hidden', isAccessory); });
+    if(isAccessory) clearAccessoryHiddenFields();
+  }
+  fDeviceAttr.addEventListener('change', updateAccessoryVisibility);
+
   // ---------- overall form validity: gates the 완료 button ----------
   function radioChecked(name){ var r = $('input[name="'+name+'"]:checked'); return r ? r.value : null; }
   function formValid(){
@@ -827,23 +859,28 @@
     if(!$('#fReleasePrice').value.trim()) return false;
     if(!fCapacity.value) return false;
     if(!pairFilled(releasePair) || !pairFormatOk(releasePair)) return false;
-    if(isPreorderType()){
-      if(!pairFilled(preorderStartPair) || !pairFilled(preorderEndPair) || !pairFormatOk(preorderStartPair) || !pairFormatOk(preorderEndPair)) return false;
-      if(!pairFilled(preactStartPair) || !pairFilled(preactEndPair) || !pairFormatOk(preactStartPair) || !pairFormatOk(preactEndPair)) return false;
+    var isAccessory = fDeviceAttr.value === '액세서리';
+    // 단말 속성이 액세서리면 사전예약/사전개통 기간, 단말 상세 스펙, 판매/요금제/신청/사은품 정보를
+    // 통째로 비노출 처리하므로 여기서도 필수 체크에서 제외한다.
+    if(!isAccessory){
+      if(isPreorderType()){
+        if(!pairFilled(preorderStartPair) || !pairFilled(preorderEndPair) || !pairFormatOk(preorderStartPair) || !pairFormatOk(preorderEndPair)) return false;
+        if(!pairFilled(preactStartPair) || !pairFilled(preactEndPair) || !pairFormatOk(preactStartPair) || !pairFormatOk(preactEndPair)) return false;
+      }
+      var device2 = ['fDisplay','fBattery','fCpu','fWeight','fSize','fWaterproof','fCamera'];
+      for(var i=0;i<device2.length;i++){ if(!$('#'+device2[i]).value.trim()) return false; }
+      // 단말 색상별 재고 / 요금제 설정 / 제휴카드 전시 순서 표는 선택 입력이라 여기서 필수 체크하지 않음.
+      if(!radioChecked('joinType')) return false;
+      if(!$all('input[name=delivery]:checked').length) return false;
+      if(!radioChecked('unusedPhone')) return false;
+      if(!radioChecked('staffDevice')) return false;
+      if(!radioChecked('lossDamage')) return false;
+      if(!radioChecked('phoneReplace')) return false;
+      if(!$('#fPlanMappingDevice').value.trim()) return false;
+      if(!radioChecked('usedPhoneGuarantee')) return false;
+      if(!radioChecked('usedPhoneReturn')) return false;
+      if(!fGiftInfo.value.trim()) return false;
     }
-    var device2 = ['fDisplay','fBattery','fCpu','fWeight','fSize','fWaterproof','fCamera'];
-    for(var i=0;i<device2.length;i++){ if(!$('#'+device2[i]).value.trim()) return false; }
-    // 단말 색상별 재고 / 요금제 설정 / 제휴카드 전시 순서 표는 선택 입력이라 여기서 필수 체크하지 않음.
-    if(!radioChecked('joinType')) return false;
-    if(!$all('input[name=delivery]:checked').length) return false;
-    if(!radioChecked('unusedPhone')) return false;
-    if(!radioChecked('staffDevice')) return false;
-    if(!radioChecked('lossDamage')) return false;
-    if(!radioChecked('phoneReplace')) return false;
-    if(!$('#fPlanMappingDevice').value.trim()) return false;
-    if(!radioChecked('usedPhoneGuarantee')) return false;
-    if(!radioChecked('usedPhoneReturn')) return false;
-    if(!fGiftInfo.value.trim()) return false;
     return true;
   }
   function recomputeSubmitEnabled(){ $('#btnSubmit').disabled = !formValid(); }
@@ -859,11 +896,12 @@
   }
   function buildSections(){
     var preorder = isPreorderType();
+    var isAccessory = fDeviceAttr.value === '액세서리';
     var sections = [];
     sections.push({ title:'상품 유형', rows:[
       ['상품 유형', radioChecked('productType')==='general' ? '일반' : '미가입예판']
     ]});
-    sections.push({ title:'단말 정보', rows:[
+    var deviceInfoRows = [
       ['카테고리 맵핑', $('#fCategoryMap').value],
       ['단말 속성', fDeviceAttr.value],
       ['단말 유형', deviceTypeWrap.classList.contains('hidden') ? '-' : fDeviceType.value],
@@ -871,19 +909,24 @@
       ['단말명(펫네임)', $('#fDeviceNickname').value.trim()],
       ['출고 가격(원)', $('#fReleasePrice').value.trim()],
       ['단말 용량(상세 노출)', fCapacity.value],
-      ['출시일자', dtText(releasePair)],
-      ['사전예약 기간', preorder ? rangeText(preorderStartPair, preorderEndPair) : '해당없음(일반)'],
-      ['사전개통 기간', preorder ? rangeText(preactStartPair, preactEndPair) : '해당없음(일반)']
-    ]});
-    sections.push({ title:'단말 상세 스펙', rows:[
-      ['디스플레이', $('#fDisplay').value.trim()],
-      ['배터리', $('#fBattery').value.trim()],
-      ['CPU', $('#fCpu').value.trim()],
-      ['무게', $('#fWeight').value.trim()],
-      ['사이즈', $('#fSize').value.trim()],
-      ['방수', $('#fWaterproof').value.trim()],
-      ['카메라', $('#fCamera').value.trim()]
-    ]});
+      ['출시일자', dtText(releasePair)]
+    ];
+    if(!isAccessory){
+      deviceInfoRows.push(['사전예약 기간', preorder ? rangeText(preorderStartPair, preorderEndPair) : '해당없음(일반)']);
+      deviceInfoRows.push(['사전개통 기간', preorder ? rangeText(preactStartPair, preactEndPair) : '해당없음(일반)']);
+    }
+    sections.push({ title:'단말 정보', rows: deviceInfoRows });
+    if(!isAccessory){
+      sections.push({ title:'단말 상세 스펙', rows:[
+        ['디스플레이', $('#fDisplay').value.trim()],
+        ['배터리', $('#fBattery').value.trim()],
+        ['CPU', $('#fCpu').value.trim()],
+        ['무게', $('#fWeight').value.trim()],
+        ['사이즈', $('#fSize').value.trim()],
+        ['방수', $('#fWaterproof').value.trim()],
+        ['카메라', $('#fCamera').value.trim()]
+      ]});
+    }
     var colorRows = $all('tr', colorStockBody).map(function(tr){
       return [$('.cs-code',tr).value.trim(), $('.cs-name',tr).value.trim(), $('.cs-rgb',tr).value.trim(), $('.cs-stock',tr).value.trim()];
     }).filter(function(r){ return r.some(function(c){ return c; }); });
@@ -895,44 +938,46 @@
     } else {
       sections.push({ title:'단말 색상별 재고', rows:[['등록된 색상', '없음']] });
     }
-    sections.push({ title:'판매 정보', rows:[
-      ['기본가입유형', radioChecked('joinType')],
-      ['배송방법', $all('input[name=delivery]:checked').map(function(c){ return c.value; }).join(', ')],
-      ['불용폰 판매 여부', radioChecked('unusedPhone')],
-      ['임직원 단말 여부', radioChecked('staffDevice')],
-      ['분실/파손 보상 여부', radioChecked('lossDamage')],
-      ['폰교체 보상 여부', radioChecked('phoneReplace')]
-    ]});
-    sections.push({ title:'요금제 정보', rows:[
-      ['요금제 매핑 단말', $('#fPlanMappingDevice').value.trim()]
-    ]});
-    var planRows = $all('tr', planSettingBody).map(function(tr){
-      return [$('.ps-label',tr).value.trim(), $('.ps-name',tr).value.trim(), $('.ps-code',tr).value.trim()];
-    }).filter(function(r){ return r.some(function(c){ return c; }); });
-    if(planRows.length){
-      sections.push({ title:'요금제 설정', table:{
-        headers:['순서','라벨','요금제명','요금제 코드'],
-        rows: planRows.map(function(r, i){ return [String(i+1), r[0], r[1], r[2]]; })
-      }});
-    } else {
-      sections.push({ title:'요금제 설정', rows:[['등록된 요금제', '없음']] });
+    if(!isAccessory){
+      sections.push({ title:'판매 정보', rows:[
+        ['기본가입유형', radioChecked('joinType')],
+        ['배송방법', $all('input[name=delivery]:checked').map(function(c){ return c.value; }).join(', ')],
+        ['불용폰 판매 여부', radioChecked('unusedPhone')],
+        ['임직원 단말 여부', radioChecked('staffDevice')],
+        ['분실/파손 보상 여부', radioChecked('lossDamage')],
+        ['폰교체 보상 여부', radioChecked('phoneReplace')]
+      ]});
+      sections.push({ title:'요금제 정보', rows:[
+        ['요금제 매핑 단말', $('#fPlanMappingDevice').value.trim()]
+      ]});
+      var planRows = $all('tr', planSettingBody).map(function(tr){
+        return [$('.ps-label',tr).value.trim(), $('.ps-name',tr).value.trim(), $('.ps-code',tr).value.trim()];
+      }).filter(function(r){ return r.some(function(c){ return c; }); });
+      if(planRows.length){
+        sections.push({ title:'요금제 설정', table:{
+          headers:['순서','라벨','요금제명','요금제 코드'],
+          rows: planRows.map(function(r, i){ return [String(i+1), r[0], r[1], r[2]]; })
+        }});
+      } else {
+        sections.push({ title:'요금제 설정', rows:[['등록된 요금제', '없음']] });
+      }
+      sections.push({ title:'신청 정보', rows:[
+        ['중고폰 가격 보장 프로그램 전시', radioChecked('usedPhoneGuarantee')],
+        ['중고폰 반납 신청 여부 전시', radioChecked('usedPhoneReturn')]
+      ]});
+      var partnerRows = $all('tr', partnerCardBody).map(function(tr){ return $('.pc-name',tr).value.trim(); }).filter(Boolean);
+      if(partnerRows.length){
+        sections.push({ title:'제휴카드 전시 순서', table:{
+          headers:['순서','카드명'],
+          rows: partnerRows.map(function(name, i){ return [String(i+1), name]; })
+        }});
+      } else {
+        sections.push({ title:'제휴카드 전시 순서', rows:[['등록된 제휴카드', '없음']] });
+      }
+      sections.push({ title:'사은품 정보', rows:[
+        ['사은품 매핑 단말', fGiftInfo.value.trim()]
+      ]});
     }
-    sections.push({ title:'신청 정보', rows:[
-      ['중고폰 가격 보장 프로그램 전시', radioChecked('usedPhoneGuarantee')],
-      ['중고폰 반납 신청 여부 전시', radioChecked('usedPhoneReturn')]
-    ]});
-    var partnerRows = $all('tr', partnerCardBody).map(function(tr){ return $('.pc-name',tr).value.trim(); }).filter(Boolean);
-    if(partnerRows.length){
-      sections.push({ title:'제휴카드 전시 순서', table:{
-        headers:['순서','카드명'],
-        rows: partnerRows.map(function(name, i){ return [String(i+1), name]; })
-      }});
-    } else {
-      sections.push({ title:'제휴카드 전시 순서', rows:[['등록된 제휴카드', '없음']] });
-    }
-    sections.push({ title:'사은품 정보', rows:[
-      ['사은품 매핑 단말', fGiftInfo.value.trim()]
-    ]});
     return sections;
   }
 
@@ -1017,7 +1062,7 @@
 
   function resetForm(){
     $all('input[type=text], input:not([type])', $('#view-form')).forEach(function(i){ i.value=''; });
-    $('#fCategoryMap').value = ''; fDeviceAttr.value = ''; updateDeviceTypeOptions();
+    $('#fCategoryMap').value = ''; fDeviceAttr.value = ''; updateDeviceTypeOptions(); updateAccessoryVisibility();
     $('#fDeviceCode').value=''; $('#fDeviceNickname').value=''; $('#fReleasePrice').value='';
     fCapacity.value = '';
     [releasePair, preorderStartPair, preorderEndPair, preactStartPair, preactEndPair].forEach(function(p){ p[0].value=''; p[1].value=''; p[0].classList.remove('error'); p[1].classList.remove('error'); });
@@ -1107,6 +1152,7 @@
 
   // ---------- init ----------
   updateDeviceTypeOptions();
+  updateAccessoryVisibility();
   updateProductTypeUI();
   recomputeSubmitEnabled();
   checkForUpdate();
