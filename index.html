@@ -141,11 +141,20 @@
 
   .form-actions{ display:flex; justify-content:center; gap:16px; margin-top:8px; }
 
-  .section-title{
-    font-family: var(--font-display); font-size:19px; font-weight:600; letter-spacing:-0.01em; color:var(--text);
-    margin: 0 0 14px; padding-top:8px; border-top:1px solid var(--hairline-strong);
+  .field-group.no-border{
+    margin: 24px 0 28px; padding-top: 32px; border-top: 1px solid var(--hairline-strong);
   }
-  .field-group.no-border .section-title{ border-top:none; padding-top:0; }
+  .section-title{
+    display:flex; align-items:center; gap:12px;
+    font-family: var(--font-display); font-size:19px; font-weight:600; letter-spacing:-0.01em; color:var(--text);
+    margin:0;
+  }
+  .section-index{
+    display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;
+    width:26px; height:26px; border-radius:6px;
+    background: var(--primary-soft); color: var(--primary);
+    font-family: var(--font-mono); font-size:12px; font-weight:600;
+  }
 
   .select-wrap{ position:relative; }
   select.input{ appearance:none; -webkit-appearance:none; cursor:pointer; }
@@ -229,7 +238,7 @@
     </div>
 
     <div class="field-group no-border">
-      <div class="section-title">단말 정보</div>
+      <div class="section-title"><span class="section-index">1</span>단말 정보</div>
     </div>
 
     <div class="field-group">
@@ -312,7 +321,7 @@
 
     <div id="secDeviceSpec">
     <div class="field-group no-border">
-      <div class="section-title">단말 상세 스펙</div>
+      <div class="section-title"><span class="section-index">2</span>단말 상세 스펙</div>
     </div>
 
     <div class="field-group">
@@ -353,7 +362,7 @@
     </div>
 
     <div class="field-group no-border">
-      <div class="section-title">단말 색상별 재고</div>
+      <div class="section-title"><span class="section-index">3</span>단말 색상별 재고</div>
     </div>
     <div class="field-group">
       <div class="dtable-wrap">
@@ -369,7 +378,7 @@
 
     <div id="secSaleInfo">
     <div class="field-group no-border">
-      <div class="section-title">판매 정보</div>
+      <div class="section-title"><span class="section-index">4</span>판매 정보</div>
     </div>
     <div class="field-group">
       <label class="field-label req">기본가입유형</label>
@@ -426,17 +435,12 @@
 
     <div id="secPlanInfo">
     <div class="field-group no-border">
-      <div class="section-title">요금제 정보</div>
+      <div class="section-title"><span class="section-index">5</span>요금제 정보</div>
     </div>
     <div class="field-group">
-      <div class="row-with-hint">
-        <div>
-          <label class="field-label req">요금제 매핑 단말</label>
-          <input id="fPlanMappingDevice" class="input" maxlength="50" placeholder="요금제 매핑 단말을 입력해주세요.">
-          <p class="error-msg" id="err-planMappingDevice">요금제 매핑 단말은 필수 입력입니다.</p>
-        </div>
-        <span class="hint">한글 불가 / 최대 50자</span>
-      </div>
+      <label class="field-label req">요금제 매핑 단말</label>
+      <input id="fPlanMappingDevice" class="input" maxlength="50" placeholder="요금제 매핑 단말을 입력해주세요.">
+      <p class="error-msg" id="err-planMappingDevice">요금제 매핑 단말은 필수 입력입니다.</p>
     </div>
     <div class="field-group">
       <label class="field-label">요금제 설정</label>
@@ -451,7 +455,7 @@
 
     <div id="secApplyInfo">
     <div class="field-group no-border">
-      <div class="section-title">신청 정보</div>
+      <div class="section-title"><span class="section-index">6</span>신청 정보</div>
     </div>
     <div class="field-group">
       <label class="field-label req">중고폰 가격 보장 프로그램 전시</label>
@@ -483,7 +487,7 @@
 
     <div id="secGiftInfo">
     <div class="field-group no-border">
-      <div class="section-title">사은품 정보</div>
+      <div class="section-title"><span class="section-index">7</span>사은품 정보</div>
     </div>
     <div class="field-group">
       <label class="field-label req">사은품 매핑 단말</label>
